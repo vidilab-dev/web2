@@ -1,0 +1,217 @@
+// Prisma schema for PT Bio Industri Nusantara.
+//
+// This schema targets PostgreSQL and covers the full admin panel model:
+// products, news/articles, homepage content, media, inbound inquiries (contact
+// / RFQ / partnership), users with role-based access control, and the
+// Draft -> Review -> Approved -> Published content workflow.
+//
+// The public site currently reads from the typed local content layer in
+// src/content so it runs with no database. Set DATABASE_URL, run
+// `npm run db:push` (or `npm run db:migrate`), and the admin panel writes
+// through Prisma instead of the local JSONL fallback in src/lib/submissions.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+// Content lifecycle shared by products, articles and editable homepage blocks.
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProductCategoryEnum {
+  PUPUK_ORGANIK
+  PUPUK_HAYATI
+  PENGENDALI_HAYATI
+}
+
+enum ArticleCategoryEnum {
+  BERITA_PERUSAHAAN
+  AKTIVITAS_PERUSAHAAN
+  INOVASI_PRODUK
+  EDUKASI_PERTANIAN
+  KEGIATAN_PENELITIAN
+  ARTIKEL_AGRIBISNIS
+}
+
+enum InquiryKind {
+  CONTACT
+  RFQ
+  PARTNERSHIP
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  ARCHIVED
+}
+
+enum Role {
+  ADMINISTRATOR
+  EDITOR
+  REVIEWER
+  VIEWER
+}
+
+// ---------------------------------------------------------------------------
+// Users & access control
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  // Hashed with argon2/bcrypt before storage; never store plaintext.
+  passwordHash String
+  role         Role     @default(VIEWER)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Editorial ownership
+  articles     Article[]
+  products     Product[] @relation("ProductAuthor")
+
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Products
+// ---------------------------------------------------------------------------
+
+model Product {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  name        String
+  category    ProductCategoryEnum
+  summary     String
+  description String
+  // JSON array of focus areas; stated as intent, never as measured claims.
+  focus       String[]
+  // Renders the designed label plate until real packaging photography is added.
+  plate       String              @default("ground-2")
+  // Marked "verified" only once the official datasheet has been checked.
+  dataStatus  String              @default("placeholder")
+  status      ContentStatus       @default(PUBLISHED)
+  // Optional path to a real product photo once supplied via the media library.
+  imageUrl    String?
+  authorId    String?
+  author      User?               @relation("ProductAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  // Specification fields stay nullable so nothing unverified is ever published.
+  composition String?
+  dosage      String?
+  application String?
+  packaging   String?
+  shelfLife   String?
+  registrationNumber String?
+
+  @@index([category, status])
+}
+
+// ---------------------------------------------------------------------------
+// News & insights
+// ---------------------------------------------------------------------------
+
+model Article {
+  id            String             @id @default(cuid())
+  slug          String             @unique
+  title         String
+  category      ArticleCategoryEnum
+  excerpt       String
+  // Body stored as a JSON array of paragraphs for editorial flexibility.
+  body          Json
+  authorId      String?
+  authorName    String
+  readingMinutes Int               @default(5)
+  imageUrl      String?
+  imageAlt      String?
+  status        ContentStatus      @default(DRAFT)
+  // True while the placeholder editorial copy is still in place.
+  sample        Boolean            @default(true)
+  publishedAt   DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  author        User?              @relation(fields: [authorId], references: [id])
+
+  @@index([status, publishedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Editable homepage content blocks
+// ---------------------------------------------------------------------------
+
+model HomeBlock {
+  id        String        @id @default(cuid())
+  // Stable key such as "hero", "introduction", "sustainability".
+  key       String        @unique
+  title     String
+  // JSON payload; shape depends on the block type.
+  content   Json
+  status    ContentStatus @default(PUBLISHED)
+  sortOrder Int           @default(0)
+  updatedAt DateTime      @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Media library
+// ---------------------------------------------------------------------------
+
+model Media {
+  id          String   @id @default(cuid())
+  // Public path served by Next, e.g. "/images/plantation-aerial.jpg".
+  url         String
+  alt         String
+  width       Int?
+  height      Int?
+  bytes       Int?
+  // Attribution for open-collection photographs; cleared for PT BIN's own.
+  creditTitle String?
+  creditAuthor String?
+  license     String?
+  sourceUrl   String?
+  // Marks photography that is NOT PT BIN's own facility documentation.
+  isPlaceholder Boolean @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([isPlaceholder])
+}
+
+// ---------------------------------------------------------------------------
+// Inbound inquiries (contact, RFQ, distributor registration)
+// ---------------------------------------------------------------------------
+
+model Inquiry {
+  id        String        @id @default(cuid())
+  // Human-quotable code such as "RFQ-2026-0001".
+  reference String        @unique
+  kind      InquiryKind
+  status    InquiryStatus @default(NEW)
+  name      String
+  email     String
+  phone     String?
+  // Full validated form payload as JSON, matching the Zod schema per kind.
+  payload   Json
+  // Lowercased, denormalised for fast admin search.
+  search    String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([kind, status])
+  @@index([email])
+}

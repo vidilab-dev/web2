@@ -1,0 +1,169 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
+import { Reveal } from "@/components/motion/reveal";
+import { solutionAudiences } from "@/content/solutions";
+import { buildPageMetadata } from "@/app/layout";
+
+export function generateStaticParams() {
+  return solutionAudiences.map((a) => ({ slug: a.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const audience = solutionAudiences.find((a) => a.slug === slug);
+  if (!audience) return {};
+  return buildPageMetadata({
+    title: audience.title,
+    description: audience.lede,
+    path: `/solutions/${audience.slug}`,
+    image: audience.photo.src,
+    imageAlt: audience.photo.alt,
+  });
+}
+
+export default async function SolutionDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const audience = solutionAudiences.find((a) => a.slug === slug);
+  if (!audience) notFound();
+
+  const others = solutionAudiences.filter((a) => a.slug !== slug);
+
+  return (
+    <>
+      <PageHeader
+        title={audience.title}
+        lede={audience.lede}
+        crumbs={[
+          { label: "Solusi", href: "/solutions" },
+          { label: audience.title },
+        ]}
+        variant="photo"
+        photo={audience.photo}
+      />
+
+      {/* Headline statement, given the full measure. */}
+      <section className="bg-ground section-y">
+        <div className="frame grid gap-y-10 md:grid-cols-12 md:gap-x-10">
+          <Reveal className="md:col-span-7">
+            <p className="statement text-[clamp(1.5rem,3.2vw,2.75rem)] leading-[1.08]">
+              {audience.headline}
+            </p>
+          </Reveal>
+          <Reveal delay={90} className="md:col-span-4 md:col-start-9 md:self-end">
+            <p className="text-[1.0625rem] leading-relaxed text-ink-2">
+              {audience.forWhom}
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Approach points as an editorial index. */}
+      <section className="bg-ground-2 section-y" aria-labelledby="approach-heading">
+        <div className="frame grid gap-y-10 md:grid-cols-12 md:gap-x-10">
+          <Reveal className="md:col-span-4">
+            <h2 id="approach-heading" className="text-h3">
+              Bagaimana Kami Bekerja
+            </h2>
+          </Reveal>
+          <ul className="md:col-span-8">
+            {audience.approach.map((p, i) => (
+              <Reveal
+                as="li"
+                key={p.title}
+                delay={i * 60}
+                className="grid gap-y-2 py-7 first:pt-0 md:grid-cols-12 md:gap-x-8"
+              >
+                <div className="md:col-span-5">
+                  <h3 className="font-display text-[1.1875rem] font-bold tracking-[-0.024em]">
+                    {p.title}
+                  </h3>
+                </div>
+                <p className="text-[1rem] leading-relaxed text-ink-2 md:col-span-7">
+                  {p.body}
+                </p>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Considerations: honest framing about what the program needs. */}
+      <section className="bg-ground section-y" aria-labelledby="considerations-heading">
+        <div className="frame grid gap-y-10 md:grid-cols-12 md:gap-x-10">
+          <Reveal className="md:col-span-5">
+            <h2 id="considerations-heading" className="text-h3">
+              Yang Perlu Diperhatikan
+            </h2>
+            <p className="lede mt-6 max-w-md text-ink-2">
+              Program ini bekerja paling baik ketika hal-hal berikut sudah
+              dipersiapkan sejak awal.
+            </p>
+          </Reveal>
+          <ul className="space-y-5 md:col-span-6 md:col-start-7">
+            {audience.considerations.map((c, i) => (
+              <Reveal as="li" key={i} delay={i * 60} className="flex items-start gap-4 bg-ground-2 p-6">
+                <CheckCircle2 aria-hidden className="mt-0.5 size-5 shrink-0 text-accent" />
+                <span className="text-[1rem] leading-relaxed">{c}</span>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="bg-deep text-ground section-y-tight">
+        <div className="frame flex flex-wrap items-center justify-between gap-6">
+          <p className="statement max-w-2xl">{audience.cta.label}</p>
+          <div className="flex flex-wrap gap-3">
+            <Link href={audience.cta.href} className="btn btn-on-dark press">
+              {audience.cta.label} <ArrowRight aria-hidden className="size-4" />
+            </Link>
+            <Link href="/products" className="btn btn-ghost-dark press">
+              Lihat Katalog Produk
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Cross-links to the other two audiences. */}
+      <section className="bg-ground-2 section-y-tight" aria-labelledby="other-solutions">
+        <div className="frame">
+          <h2 id="other-solutions" className="text-h3">
+            Solusi Lainnya
+          </h2>
+          <ul className="mt-8 grid gap-6 md:grid-cols-2">
+            {others.map((o) => (
+              <li key={o.slug}>
+                <Link
+                  href={`/solutions/${o.slug}`}
+                  className="group flex h-full flex-col justify-between bg-ground p-7 transition-colors duration-300 hover:bg-deep hover:text-ground md:p-8"
+                >
+                  <h3 className="font-display text-[1.375rem] font-bold tracking-[-0.026em]">
+                    {o.title}
+                  </h3>
+                  <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2 transition-colors duration-300 group-hover:text-ground/75">
+                    {o.headline}
+                  </p>
+                  <span className="mt-6 inline-flex items-center gap-1.5 font-display text-[0.875rem] font-bold text-accent transition-colors duration-300 group-hover:text-fresh">
+                    Lihat Detail <ArrowRight aria-hidden className="size-4" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </>
+  );
+}
