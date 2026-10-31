@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, BadgeCheck, Clock } from "lucide-react";
-import { products, productCategories } from "@/content/products";
+import { listProductsWithSpec } from "@/lib/products";
+import { productCategories } from "@/content/products";
 import { ProductPlate } from "@/components/products/plate";
 
 export const metadata = {
@@ -8,7 +9,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminProductsPage() {
+export default async function AdminProductsPage() {
+  const products = await listProductsWithSpec();
   const byCategory = productCategories.map((c) => ({
     category: c,
     items: products.filter((p) => p.category === c.slug),
@@ -85,10 +87,10 @@ export default function AdminProductsPage() {
                     {p.dataStatus === "verified" ? "Terverifikasi" : "Menunggu data"}
                   </span>
                   <Link
-                    href={`/products/${p.slug}`}
+                    href={`/admin/products/${p.slug}`}
                     className="text-[0.8125rem] font-semibold text-accent hover:underline"
                   >
-                    Lihat halaman
+                    Isi datasheet
                   </Link>
                 </div>
               </li>

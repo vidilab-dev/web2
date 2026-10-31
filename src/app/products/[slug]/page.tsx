@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ProductPlate } from "@/components/products/plate";
 import { Reveal } from "@/components/motion/reveal";
 import { getCategory, getProduct, products } from "@/content/products";
+import { getProductWithSpec, specFields } from "@/lib/products";
 import { site } from "@/content/site";
 import { buildPageMetadata } from "@/app/layout";
 
@@ -32,13 +33,13 @@ export async function generateMetadata({
 }
 
 /** Specification rows. Empty values render an explicit pending state, never invented data. */
-const specificationLabels = [
-  "Komposisi / kandungan",
-  "Dosis penggunaan",
-  "Cara aplikasi",
-  "Bentuk & kemasan",
-  "Masa simpan",
-  "Nomor registrasi",
+const specificationLabels: { key: (typeof specFields)[number]; label: string }[] = [
+  { key: "composition", label: "Komposisi / kandungan" },
+  { key: "dosage", label: "Dosis penggunaan" },
+  { key: "application", label: "Cara aplikasi" },
+  { key: "packaging", label: "Bentuk & kemasan" },
+  { key: "shelfLife", label: "Masa simpan" },
+  { key: "registrationNumber", label: "Nomor registrasi" },
 ];
 
 export default async function ProductDetailPage({
@@ -47,8 +48,11 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProductWithSpec(slug);
   if (!product) notFound();
+
+  const localFallback = getProduct(slug);
+  if (!localFallback) notFound();
 
   const category = getCategory(product.category);
   const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
@@ -150,14 +154,21 @@ export default async function ProductDetailPage({
                   Spesifikasi Produk
                 </h2>
                 <dl className="mt-6 space-y-5">
-                  {specificationLabels.map((label) => (
-                    <div key={label} className="flex items-start justify-between gap-4">
-                      <dt className="text-[0.9375rem] text-ink-2">{label}</dt>
-                      <dd className="text-right font-display text-[0.875rem] font-bold text-earth-2">
-                        Menunggu datasheet
-                      </dd>
-                    </div>
-                  ))}
+                  {specificationLabels.map(({ key, label }) => {
+                    const value = product[key];
+                    return (
+                      <div key={key} className="flex items-start justify-between gap-4">
+                        <dt className="text-[0.9375rem] text-ink-2">{label}</dt>
+                        <dd
+                          className={`text-right font-display text-[0.875rem] font-bold ${
+                            value ? "text-ink" : "text-earth-2"
+                          }`}
+                        >
+                          {value ?? "Menunggu datasheet"}
+                        </dd>
+                      </div>
+                    );
+                  })}
                 </dl>
                 <p className="mt-7 flex items-start gap-2.5 text-[0.875rem] leading-relaxed text-ink-2">
                   <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
