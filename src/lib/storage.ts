@@ -10,11 +10,17 @@ import { createClient } from "@supabase/supabase-js";
 
 const BUCKET = "product-photos";
 
-function storage() {
+/** Buckets used by the admin panel. Created once in Supabase Storage as public. */
+export const buckets = {
+  products: "product-photos",
+  articles: "article-photos",
+} as const;
+
+function storage(bucket: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
-  return createClient(url, key).storage.from(BUCKET);
+  return createClient(url, key).storage.from(bucket);
 }
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
@@ -28,9 +34,10 @@ function safeName(name: string): string {
     .slice(0, 80);
 }
 
-/** Uploads a product photo, returns the public URL or a field error. */
-export async function uploadProductPhoto(
-  slug: string,
+/** Uploads a photo, returns the public URL or a field error. */
+export async function uploadPhoto(
+  bucket: keyof typeof buckets,
+  namespace: string,
   file: File
 ): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
   if (!ALLOWED.has(file.type)) {
@@ -43,13 +50,13 @@ export async function uploadProductPhoto(
     return { ok: false, error: "Berkas kosong." };
   }
 
-  const store = storage();
+  const store = storage(buckets[bucket]);
   if (!store) {
     return { ok: false, error: "Penyimpanan belum tersambung (kunci Supabase belum diisi)." };
   }
 
-  const cleanSlug = slug.replace(/[^a-z0-9-]+/g, "-");
-  const path = `${cleanSlug}/${Date.now()}-${safeName(file.name)}`;
+  const clean = namespace.replace(/[^a-z0-9-]+/g, "-");
+  const path = `${clean}/${Date.now()}-${safeName(file.name)}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   const { error } = await store.upload(path, bytes, {
@@ -57,10 +64,18 @@ export async function uploadProductPhoto(
     upsert: false,
   });
   if (error) {
-    console.error("[storage] upload failed", slug, error.message);
+    console.error("[storage] upload failed", bucket, namespace, error.message);
     return { ok: false, error: "Gagal mengunggah. Coba lagi." };
   }
 
   const { data } = store.getPublicUrl(path);
   return { ok: true, url: data.publicUrl };
+}
+
+/** Uploads a product photo, returns the public URL or a field error. */
+export async function uploadProductPhoto(
+  slug: string,
+  file: File
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  return uploadPhoto("products", slug, file);
 }

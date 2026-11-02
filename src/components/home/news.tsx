@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { articles } from "@/content/news";
+import { listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 import { Reveal } from "@/components/motion/reveal";
 
-export function News() {
+export async function News() {
+  const articles = await listArticles();
   const [lead, ...others] = articles;
 
   return (

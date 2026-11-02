@@ -5,13 +5,9 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { articles, getArticle } from "@/content/news";
+import { getArticleBySlug, listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 import { buildPageMetadata } from "@/app/layout";
-
-export function generateStaticParams() {
-  return articles.map((a) => ({ slug: a.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -19,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticleBySlug(slug);
   if (!article) return {};
   return buildPageMetadata({
     title: article.title,
@@ -36,10 +32,11 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
-  const others = articles.filter((a) => a.slug !== slug).slice(0, 3);
+  const all = await listArticles();
+  const others = all.filter((a) => a.slug !== slug).slice(0, 3);
 
   const schema = {
     "@context": "https://schema.org",

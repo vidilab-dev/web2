@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, FileText } from "lucide-react";
-import { articles, articleCategories } from "@/content/news";
+import { ArrowUpRight, FileText, Plus } from "lucide-react";
+import { articleCategories } from "@/content/news";
+import { listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 
 export const metadata = {
@@ -8,7 +9,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminNewsPage() {
+export default async function AdminNewsPage() {
+  const articles = await listArticles();
   const sampleCount = articles.filter((a) => a.sample).length;
 
   return (
@@ -21,9 +23,15 @@ export default function AdminNewsPage() {
             yang menunggu konfirmasi perusahaan.
           </p>
         </div>
-        <Link href="/news" className="btn btn-secondary press">
-          Lihat di Situs <ArrowUpRight aria-hidden className="size-4" />
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/news/new" className="btn btn-primary press">
+            <Plus aria-hidden className="size-4" />
+            Artikel Baru
+          </Link>
+          <Link href="/news" className="btn btn-secondary press">
+            Lihat di Situs <ArrowUpRight aria-hidden className="size-4" />
+          </Link>
+        </div>
       </header>
 
       {/* Workflow note */}
@@ -78,11 +86,18 @@ export default function AdminNewsPage() {
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
-                  {a.sample && (
+                  {a.sample ? (
                     <span className="inline-flex items-center gap-1.5 rounded-[2px] bg-earth/15 px-2.5 py-1 text-[0.75rem] font-bold text-earth">
                       <FileText aria-hidden className="size-3.5" />
                       Contoh
                     </span>
+                  ) : (
+                    <Link
+                      href={`/admin/news/${a.slug}`}
+                      className="text-[0.8125rem] font-semibold text-accent hover:underline"
+                    >
+                      Ubah
+                    </Link>
                   )}
                   <span className="inline-flex items-center gap-1.5 rounded-[2px] bg-accent px-2.5 py-1 text-[0.75rem] font-bold text-ground">
                     Dipublikasikan

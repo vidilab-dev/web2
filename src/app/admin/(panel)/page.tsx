@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { listSubmissions, type Submission } from "@/lib/submissions";
 import { products } from "@/content/products";
-import { articles } from "@/content/news";
+import { listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,8 @@ export default async function AdminDashboardPage() {
   };
 
   const needsVerification = products.filter((p) => p.dataStatus === "placeholder").length;
-  const sampleArticles = articles.filter((a) => a.sample).length;
+  const allArticles = await listArticles();
+  const sampleArticles = allArticles.filter((a) => a.sample).length;
 
   const stats = [
     { label: "Permintaan masuk", value: counts.all, href: "/admin/submissions", icon: Inbox },

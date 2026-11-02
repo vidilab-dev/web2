@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
 import { products, productCategories } from "@/content/products";
-import { articles } from "@/content/news";
+import { listArticles } from "@/lib/articles";
 import { solutionAudiences } from "@/content/solutions";
 
 /**
@@ -11,7 +11,7 @@ import { solutionAudiences } from "@/content/solutions";
  * product, article or solution automatically adds it here. Admin and API
  * routes are excluded.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = site.url;
   const now = new Date();
 
@@ -56,6 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  const articles = await listArticles();
   const articleRoutes: MetadataRoute.Sitemap = articles.map((a) => ({
     url: `${base}/news/${a.slug}`,
     lastModified: new Date(a.publishedAt),

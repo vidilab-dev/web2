@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { articles, articleCategories } from "@/content/news";
+import { articleCategories } from "@/content/news";
+import { listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 import { buildPageMetadata } from "@/app/layout";
 
@@ -15,7 +16,8 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/news",
 });
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const articles = await listArticles();
   const [lead, ...others] = articles;
 
   return (
