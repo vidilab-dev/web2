@@ -5,7 +5,8 @@
   "description": "Website resmi PT Bio Industri Nusantara — Integrated Bio-Agribusiness Solution",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
