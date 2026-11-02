@@ -36,6 +36,7 @@ export async function saveProductSpecAction(
     packaging: String(formData.get("packaging") ?? ""),
     shelfLife: String(formData.get("shelfLife") ?? ""),
     registrationNumber: String(formData.get("registrationNumber") ?? ""),
+    imageUrl: String(formData.get("imageUrl") ?? ""),
     dataStatus: String(formData.get("dataStatus") ?? "placeholder"),
   });
 

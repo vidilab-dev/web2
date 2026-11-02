@@ -45,6 +45,12 @@ const fields = [
   },
 ] as const;
 
+const photoField = {
+  name: "imageUrl",
+  label: "Foto produk",
+  hint: "Path file di pustaka media, contoh: /images/marfu-p.jpg — atau URL https. Kosongkan jika belum ada foto asli.",
+} as const;
+
 type State = { fieldErrors?: Record<string, string> } | undefined;
 
 export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; saved: boolean }) {
@@ -106,6 +112,53 @@ export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; 
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="bg-ground p-6 md:p-8" aria-labelledby="photo-heading">
+        <h2 id="photo-heading" className="font-display text-[1.125rem] font-bold tracking-[-0.02em]">
+          {photoField.label}
+        </h2>
+        <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-2">
+          Upload file foto ke folder <strong>public/images/</strong> lewat Git
+          (nama file huruf kecil, contoh <strong>marfu-p.jpg</strong>), lalu tulis path-nya di
+          bawah. Hanya foto asli produk — bukan foto suasana atau stok.
+        </p>
+        {product.imageUrl && (
+          <figure className="mt-4 max-w-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={product.imageUrl}
+              alt={`Foto ${product.name} saat ini`}
+              className="w-full rounded-[2px] border border-ink/10"
+            />
+            <figcaption className="meta mt-2">Foto saat ini.</figcaption>
+          </figure>
+        )}
+        <div className="mt-4">
+          <label
+            htmlFor="spec-imageUrl"
+            className="font-display text-[0.9375rem] font-bold text-ink"
+          >
+            Path foto
+          </label>
+          <input
+            id="spec-imageUrl"
+            name="imageUrl"
+            type="text"
+            defaultValue={product.imageUrl ?? ""}
+            placeholder={photoField.hint}
+            aria-describedby="spec-imageUrl-hint"
+            className="mt-2 w-full rounded-[2px] border border-ink/20 bg-white p-3 text-[0.875rem] tracking-[-0.01em] text-ink placeholder:text-ink/35 focus:border-accent focus:outline-none"
+          />
+          <p id="spec-imageUrl-hint" className="meta mt-1.5">
+            {photoField.hint}
+          </p>
+          {state?.fieldErrors?.imageUrl && (
+            <p role="alert" className="mt-1.5 text-[0.875rem] font-semibold text-red-800">
+              {state.fieldErrors.imageUrl}
+            </p>
+          )}
         </div>
       </section>
 

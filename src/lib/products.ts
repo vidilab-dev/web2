@@ -22,6 +22,7 @@ export type ProductSpec = {
   packaging: string | null;
   shelfLife: string | null;
   registrationNumber: string | null;
+  imageUrl: string | null;
 };
 
 export type ProductWithSpec = LocalProduct & ProductSpec;
@@ -33,6 +34,7 @@ const specFields = [
   "packaging",
   "shelfLife",
   "registrationNumber",
+  "imageUrl",
 ] as const;
 
 /** Validation for the admin datasheet form. Every field optional except the status flag. */
@@ -43,6 +45,15 @@ export const productSpecSchema = z.object({
   packaging: z.string().trim().max(500).optional().or(z.literal("")),
   shelfLife: z.string().trim().max(500).optional().or(z.literal("")),
   registrationNumber: z.string().trim().max(500).optional().or(z.literal("")),
+  imageUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => v === "" || v.startsWith("/") || v.startsWith("https://"), {
+      message: "Isi path lokal (/images/...) atau URL https.",
+    })
+    .optional()
+    .or(z.literal("")),
   dataStatus: z.enum(["placeholder", "verified"]),
 });
 
@@ -55,6 +66,7 @@ const emptySpec: ProductSpec = {
   packaging: null,
   shelfLife: null,
   registrationNumber: null,
+  imageUrl: null,
 };
 
 function withLocalSpec(p: LocalProduct): ProductWithSpec {
@@ -123,6 +135,7 @@ export async function getProductWithSpec(slug: string): Promise<ProductWithSpec 
       packaging: row.packaging,
       shelfLife: row.shelfLife,
       registrationNumber: row.registrationNumber,
+      imageUrl: row.imageUrl,
     };
   } catch (err) {
     console.error("[products] database read failed, using local content", slug, err);
@@ -169,6 +182,7 @@ export async function saveProductSpec(
         packaging: blankToNull(d.packaging),
         shelfLife: blankToNull(d.shelfLife),
         registrationNumber: blankToNull(d.registrationNumber),
+        imageUrl: blankToNull(d.imageUrl),
         dataStatus: d.dataStatus,
       },
     });

@@ -125,13 +125,17 @@ export default async function ProductDetailPage({
               </Link>
             </Reveal>
 
-            {/* Honest editorial photograph: the world this product serves, never presented as the product itself. */}
+            {/* Real product photo once supplied, otherwise the honest editorial placeholder. */}
             <Reveal delay={180} className="mt-12">
               <figure>
                 <div className="relative aspect-[16/9] overflow-hidden bg-ground-3">
                   <Image
-                    src={category?.photo.src ?? "/images/compost-sieved.jpg"}
-                    alt={category?.photo.alt ?? "Kompos yang telah diayak sebagai bahan perbaikan tanah"}
+                    src={product.imageUrl ?? category?.photo.src ?? "/images/compost-sieved.jpg"}
+                    alt={
+                      product.imageUrl
+                        ? `Foto produk ${product.name}`
+                        : (category?.photo.alt ?? "Kompos yang telah diayak sebagai bahan perbaikan tanah")
+                    }
                     fill
                     sizes="(max-width: 768px) 100vw, 55vw"
                     quality={76}
@@ -139,8 +143,14 @@ export default async function ProductDetailPage({
                   />
                 </div>
                 <figcaption className="meta mt-3 max-w-2xl">
-                  Foto suasana {category?.label.toLowerCase() ?? "produk"} di lapangan.
-                  Foto produk {product.name} menyusul setelah dokumentasi resmi tersedia.
+                  {product.imageUrl ? (
+                    <>Foto resmi produk {product.name}.</>
+                  ) : (
+                    <>
+                      Foto suasana {category?.label.toLowerCase() ?? "produk"} di lapangan.
+                      Foto produk {product.name} menyusul setelah dokumentasi resmi tersedia.
+                    </>
+                  )}
                 </figcaption>
               </figure>
             </Reveal>
