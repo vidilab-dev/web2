@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save } from "lucide-react";
-import { saveProductSpecAction } from "@/app/admin/actions";
+import { ArrowLeft, Save, Upload } from "lucide-react";
+import { saveProductSpecAction, uploadProductPhotoAction } from "@/app/admin/actions";
 import type { ProductWithSpec } from "@/lib/products";
 
 const fields = [
@@ -52,6 +52,57 @@ const photoField = {
 } as const;
 
 type State = { fieldErrors?: Record<string, string> } | undefined;
+type UploadState = { error?: string } | undefined;
+
+function PhotoUploader({ slug, current }: { slug: string; current: string | null }) {
+  const bound = uploadProductPhotoAction.bind(null, slug);
+  const [state, action, pending] = useActionState<UploadState, FormData>(bound, undefined);
+  const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <form action={action} className="mt-4 border border-ink/15 bg-white p-4">
+      <p className="font-display text-[0.9375rem] font-bold text-ink">Unggah foto baru</p>
+      {(preview ?? current) && (
+        <figure className="mt-3 max-w-sm">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview ?? current ?? ""}
+            alt="Pratinjau foto produk"
+            className="w-full rounded-[2px] border border-ink/10"
+          />
+          <figcaption className="meta mt-2">
+            {preview ? "Pratinjau berkas yang dipilih." : "Foto saat ini."}
+          </figcaption>
+        </figure>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <input
+          ref={inputRef}
+          type="file"
+          name="photo"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          aria-label="Pilih berkas foto produk"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            setPreview(f ? URL.createObjectURL(f) : null);
+          }}
+          className="max-w-full text-[0.875rem] text-ink-2 file:mr-3 file:rounded-[2px] file:border-0 file:bg-deep file:px-4 file:py-2 file:text-[0.875rem] file:font-bold file:text-ground"
+        />
+        <button type="submit" disabled={pending} className="btn btn-secondary press">
+          <Upload aria-hidden className="size-4" />
+          {pending ? "Mengunggah…" : "Unggah & Pasang"}
+        </button>
+      </div>
+      <p className="meta mt-2">JPG, PNG, WebP, atau AVIF · maksimal 5 MB.</p>
+      {state?.error && (
+        <p role="alert" className="mt-2 text-[0.875rem] font-semibold text-red-800">
+          {state.error}
+        </p>
+      )}
+    </form>
+  );
+}
 
 export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; saved: boolean }) {
   const bound = saveProductSpecAction.bind(null, product.slug);
@@ -120,21 +171,10 @@ export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; 
           {photoField.label}
         </h2>
         <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-2">
-          Upload file foto ke folder <strong>public/images/</strong> lewat Git
-          (nama file huruf kecil, contoh <strong>marfu-p.jpg</strong>), lalu tulis path-nya di
-          bawah. Hanya foto asli produk — bukan foto suasana atau stok.
+          Unggah langsung dari sini, atau tulis path manual jika berkas sudah ada
+          di pustaka media. Hanya foto asli produk — bukan foto suasana atau stok.
         </p>
-        {product.imageUrl && (
-          <figure className="mt-4 max-w-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.imageUrl}
-              alt={`Foto ${product.name} saat ini`}
-              className="w-full rounded-[2px] border border-ink/10"
-            />
-            <figcaption className="meta mt-2">Foto saat ini.</figcaption>
-          </figure>
-        )}
+        <PhotoUploader slug={product.slug} current={product.imageUrl} />
         <div className="mt-4">
           <label
             htmlFor="spec-imageUrl"

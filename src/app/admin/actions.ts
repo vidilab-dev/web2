@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createSession, destroySession, verifyPassword } from "@/lib/auth";
 import { updateSubmissionStatus, type SubmissionStatus } from "@/lib/submissions";
 import { saveProductSpec } from "@/lib/products";
+import { uploadProductPhoto } from "@/lib/storage";
 
 /** Verifies the admin password and starts a signed session cookie. */
 export async function loginAction(_prev: unknown, formData: FormData) {
@@ -44,6 +45,28 @@ export async function saveProductSpecAction(
 
   revalidatePath(`/products/${slug}`);
   revalidatePath("/products");
+  revalidatePath("/admin/products");
+  redirect(`/admin/products/${slug}?saved=1`);
+}
+
+/** Uploads a product photo to Supabase Storage and returns its public URL. */
+export async function uploadProductPhotoAction(
+  slug: string,
+  _prev: unknown,
+  formData: FormData
+) {
+  const file = formData.get("photo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Pilih berkas foto dulu." };
+  }
+
+  const uploaded = await uploadProductPhoto(slug, file);
+  if (!uploaded.ok) return { error: uploaded.error };
+
+  const saved = await saveProductSpec(slug, { imageUrl: uploaded.url, dataStatus: "placeholder" });
+  if (!saved.ok) return { error: "Foto terunggah, tapi gagal disimpan ke produk." };
+
+  revalidatePath(`/products/${slug}`);
   revalidatePath("/admin/products");
   redirect(`/admin/products/${slug}?saved=1`);
 }
