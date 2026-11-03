@@ -1,13 +1,32 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * PT BIN identity mark.
- *
- * The mark is the subject's own motif: an open cycle, the biological nutrient
- * cycle and the culture dish, with a sprouting leaf inside it. Drawn as vector
- * so it stays crisp at every size and inherits colour from its context.
+ * Bionusa identity mark — the three-arrow nutrient-cycle mark from the
+ * official logo (transparent PNG, wordmark cropped away; the lockup carries
+ * the company name as text next to it).
  */
 export function LogoMark({ className }: { className?: string }) {
+  return (
+    <Image
+      src="/images/bionusa-mark.png"
+      alt=""
+      aria-hidden="true"
+      width={631}
+      height={877}
+      loading="eager"
+      sizes="64px"
+      className={cn("size-7 shrink-0 object-contain md:size-8", className)}
+    />
+  );
+}
+
+/**
+ * The same motif as a single-colour vector, for places the mark has to
+ * inherit a tone: the enlarged watermarks behind product plates. Raster
+ * artwork cannot follow the plate's palette, so the vector stays.
+ */
+export function WatermarkMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"

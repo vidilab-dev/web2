@@ -92,6 +92,7 @@ const organizationSchema = {
   alternateName: site.shortName,
   description: site.description,
   url: site.url,
+  logo: `${site.url}/images/bionusa-mark.png`,
   slogan: site.tagline,
   industry: "Agriculture",
   knowsAbout: [

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { productCategories, type Product } from "@/content/products";
 import { cn } from "@/lib/utils";
-import { LogoMark } from "@/components/layout/logo";
+import { WatermarkMark } from "@/components/layout/logo";
 
 const tone: Record<Product["plate"], { plate: string; name: string; meta: string; mark: string; blurb: string }> = {
   deep: {
@@ -64,7 +64,7 @@ export function ProductPlate({
         className
       )}
     >
-      <LogoMark
+      <WatermarkMark
         aria-hidden
         className={cn(
           "pointer-events-none absolute -bottom-12 -right-10 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",

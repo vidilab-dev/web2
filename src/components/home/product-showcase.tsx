@@ -3,7 +3,7 @@ import { ArrowUpRight, Info } from "lucide-react";
 import { products, productCategories, type Product } from "@/content/products";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/motion/reveal";
-import { LogoMark } from "@/components/layout/logo";
+import { WatermarkMark } from "@/components/layout/logo";
 import type { HomeContent } from "@/lib/page-specs";
 
 /**
@@ -69,7 +69,7 @@ export function ProductShowcase({ c }: { c: HomeContent }) {
                 >
                   {/* The cycle mark, enlarged to a watermark, the motif carries through.
                       Anchored bottom-right so it never rides over the product name. */}
-                  <LogoMark
+                  <WatermarkMark
                     aria-hidden
                     className={cn(
                       "pointer-events-none absolute -bottom-12 -right-10 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",
