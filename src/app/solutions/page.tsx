@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
 import { solutionStages } from "@/content/home";
 import { solutionAudiences } from "@/content/solutions";
+import { getPageContent } from "@/lib/pages";
+import { solutionsSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -17,24 +19,19 @@ export const metadata: Metadata = buildPageMetadata({
   imageAlt: "Pandangan udara atas areal perkebunan",
 });
 
-export default function SolutionsPage() {
+export default async function SolutionsPage() {
+  const c = await getPageContent(solutionsSpec);
+  // The admin edits each stage's text; ids, numbering and images stay fixed.
+  const stages = solutionStages.map((s, i) => ({ ...s, ...(c.stages[i] ?? {}) }));
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Solusi
-            <br />
-            Terintegrasi
-          </>
-        }
-        lede="Kami tidak memulai dari produk. Kami memulai dari lahan, lalu menyusun lima tahap yang saling menopang sampai hasil dievaluasi."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Solusi" }]}
         variant="photo"
-        photo={{
-          src: "/images/plantation-aerial.jpg",
-          alt: "Pandangan udara atas areal perkebunan yang membentang luas",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* The five stages as an ordered narrative — the spine of the approach. */}
@@ -43,17 +40,16 @@ export default function SolutionsPage() {
           <Reveal className="md:col-span-4">
             <div className="lg:sticky lg:top-28">
               <h2 id="stages-heading" className="text-h3">
-                Lima Tahap Program
+                {c.stagesHeading}
               </h2>
               <p className="lede mt-6 max-w-sm text-ink-2">
-                Urutan ini bukan template. Ia adalah kerangka kerja yang
-                menyesuaikan kondisi setiap lahan.
+                {c.stagesLede}
               </p>
             </div>
           </Reveal>
 
           <ol className="md:col-span-8">
-            {solutionStages.map((s, i) => (
+            {stages.map((s, i) => (
               <Reveal
                 as="li"
                 key={s.id}
@@ -83,7 +79,7 @@ export default function SolutionsPage() {
       <section aria-labelledby="audiences-heading" className="bg-ground-2 section-y">
         <div className="frame">
           <Reveal>
-            <h2 id="audiences-heading">Solusi untuk Setiap Skala</h2>
+            <h2 id="audiences-heading">{c.audiencesHeading}</h2>
           </Reveal>
         </div>
 
@@ -134,7 +130,7 @@ export default function SolutionsPage() {
       <section className="bg-ground-3 section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Setiap program dimulai dari satu percakapan tentang kondisi lahan Anda.
+            {c.closingStatement}
           </p>
           <Link href="/contact" className="btn btn-primary press">
             Mulai Percakapan <ArrowUpRight aria-hidden className="size-4" />

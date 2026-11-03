@@ -35,6 +35,7 @@ function PhotoPicker({
     undefined
   );
   const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // When the upload succeeds, hand the URL to the parent form field.
   useEffect(() => {
@@ -54,8 +55,11 @@ function PhotoPicker({
           />
         </figure>
       )}
-      <form action={action} className="mt-3 flex flex-wrap items-center gap-3">
+      {/* Not a <form>: nested forms are invalid HTML inside the article form;
+          dispatch the upload action directly instead. */}
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <input
+          ref={inputRef}
           type="file"
           name="photo"
           accept="image/jpeg,image/png,image/webp,image/avif"
@@ -66,11 +70,21 @@ function PhotoPicker({
           }}
           className="max-w-full text-[0.875rem] text-ink-2 file:mr-3 file:rounded-[2px] file:border-0 file:bg-deep file:px-4 file:py-2 file:text-[0.875rem] file:font-bold file:text-ground"
         />
-        <button type="submit" disabled={pending} className="btn btn-secondary press">
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => {
+            const fd = new FormData();
+            const file = inputRef.current?.files?.[0];
+            if (file) fd.append("photo", file);
+            void action(fd);
+          }}
+          className="btn btn-secondary press"
+        >
           <Upload aria-hidden className="size-4" />
           {pending ? "Mengunggah…" : "Unggah"}
         </button>
-      </form>
+      </div>
       <p className="meta mt-2">JPG, PNG, WebP, atau AVIF · maksimal 5 MB.</p>
       {state?.error && (
         <p role="alert" className="mt-2 text-[0.875rem] font-semibold text-red-800">

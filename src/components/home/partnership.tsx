@@ -3,8 +3,23 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { partnershipTypes } from "@/content/home";
 import { Reveal } from "@/components/motion/reveal";
+import type { HomeContent } from "@/lib/page-specs";
 
-export function Partnership() {
+type PartnershipType = { title: string; description: string; href: string };
+
+/**
+ * The four tracks are owned by the /partnership page spec; the server page
+ * passes them here so one edit updates both views.
+ */
+export function Partnership({
+  c,
+  types,
+}: {
+  c: HomeContent;
+  types: PartnershipType[];
+}) {
+  const list = types.length > 0 ? types : partnershipTypes;
+
   return (
     <section
       aria-labelledby="partnership-heading"
@@ -14,17 +29,15 @@ export function Partnership() {
         <div className="md:col-span-5">
           <Reveal>
             <h2 id="partnership-heading" className="text-[clamp(2.6rem,6.4vw,5.5rem)]">
-              Let&apos;s Grow
-              <br />
-              Together
+              {c.partnershipHeading.split("\n").map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))}
             </h2>
           </Reveal>
           <Reveal delay={80}>
-            <p className="lede mt-8 max-w-md text-ink-2">
-              Kami membuka empat jalur kerja sama. Pilih yang paling dekat
-              dengan posisi Anda, dan kami akan menyusun langkah berikutnya
-              bersama.
-            </p>
+            <p className="lede mt-8 max-w-md text-ink-2">{c.partnershipLede}</p>
           </Reveal>
           <Reveal delay={140} className="mt-10 flex flex-wrap gap-3">
             <Link href="/partnership" className="btn btn-primary press">
@@ -38,8 +51,8 @@ export function Partnership() {
           <Reveal delay={180} className="mt-12">
             <figure className="relative aspect-[4/3] overflow-hidden bg-ground-2 md:aspect-[3/2]">
               <Image
-                src="/images/farmer-harvest.jpg"
-                alt="Petani memanen padi di lahan persawahan Indonesia"
+                src={c.partnershipPhoto.src}
+                alt={c.partnershipPhoto.alt}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
                 quality={78}
@@ -50,7 +63,7 @@ export function Partnership() {
         </div>
 
         <ul className="md:col-span-6 md:col-start-7 -mx-6 md:-mx-8">
-          {partnershipTypes.map((p, i) => (
+          {list.map((p, i) => (
             <Reveal as="li" key={p.title} delay={i * 70} className="first:pt-0">
               <Link
                 href={p.href}

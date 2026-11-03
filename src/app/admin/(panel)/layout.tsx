@@ -8,6 +8,7 @@ import {
   Images,
   Users,
   Home,
+  FileText,
   LogOut,
 } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
@@ -17,6 +18,7 @@ import { LogoMark } from "@/components/layout/logo";
 const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/submissions", label: "Permintaan Masuk", icon: Inbox },
+  { href: "/admin/pages", label: "Halaman", icon: FileText },
   { href: "/admin/products", label: "Produk", icon: Package },
   { href: "/admin/news", label: "Berita & Wawasan", icon: Newspaper },
   { href: "/admin/media", label: "Pustaka Media", icon: Images },

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { mission, vision } from "@/content/about";
+import { getPageContent } from "@/lib/pages";
+import { visionMissionSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -13,26 +14,20 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/about/vision-mission",
 });
 
-export default function VisionMissionPage() {
+export default async function VisionMissionPage() {
+  const c = await getPageContent(visionMissionSpec);
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Visi
-            <br />&amp; Misi
-          </>
-        }
-        lede="Dua kalimat yang menentukan arah perusahaan, dan lima komitmen yang menerjemahkannya menjadi pekerjaan sehari-hari."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[
           { label: "Tentang Kami", href: "/about" },
           { label: "Visi & Misi" },
         ]}
         variant="photo"
-        photo={{
-          src: "/images/rice-terraces.jpg",
-          alt: "Terras sawah yang membentang mengikuti kontur lahan",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* Vision — one large statement, given the whole width to itself. */}
@@ -40,17 +35,17 @@ export default function VisionMissionPage() {
         <div className="frame grid gap-y-8 md:grid-cols-12 md:gap-x-10">
           <Reveal className="md:col-span-3">
             <h2 id="vision-heading" className="text-h3 text-accent">
-              Visi
+              {c.visionHeading}
             </h2>
           </Reveal>
           <div className="md:col-span-9">
             <Reveal delay={70}>
               <p className="statement text-[clamp(1.75rem,4vw,3.5rem)] leading-[1.06]">
-                {vision.statement}
+                {c.visionStatement}
               </p>
             </Reveal>
             <Reveal delay={140}>
-              <p className="meta mt-6 max-w-lg">{vision.note}</p>
+              <p className="meta mt-6 max-w-lg">{c.visionNote}</p>
             </Reveal>
           </div>
         </div>
@@ -62,17 +57,16 @@ export default function VisionMissionPage() {
           <Reveal className="md:col-span-4">
             <div className="lg:sticky lg:top-28">
               <h2 id="mission-heading" className="text-h3 text-accent">
-                Misi
+                {c.missionHeading}
               </h2>
               <p className="lede mt-6 max-w-sm text-ink-2">
-                Lima komitmen yang mengubah arah perusahaan menjadi tindakan yang
-                dapat dinilai.
+                {c.missionLede}
               </p>
             </div>
           </Reveal>
 
           <ol className="md:col-span-8">
-            {mission.map((m, i) => (
+            {c.mission.map((m, i) => (
               <Reveal
                 as="li"
                 key={i}
@@ -94,7 +88,7 @@ export default function VisionMissionPage() {
       <section className="bg-deep text-ground section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Lihat nilai-nilai yang memandu keputusan teknis kami.
+            {c.closingStatement}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/about/values" className="btn btn-on-dark press">

@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ProductPlate } from "@/components/products/plate";
 import { Reveal } from "@/components/motion/reveal";
 import { productCategories, products, getProductsByCategory } from "@/content/products";
+import { getPageContent } from "@/lib/pages";
+import { productsSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 import { cn } from "@/lib/utils";
 
@@ -30,24 +32,17 @@ const layout = [
   { span: "md:col-span-6 lg:col-span-4", offset: "", height: "min-h-[18rem] lg:min-h-[24rem]" },
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const c = await getPageContent(productsSpec);
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Lini
-            <br />
-            Produk
-          </>
-        }
-        lede="Sembilan produk dalam tiga lini yang dirancang untuk saling melengkapi dalam satu program pemeliharaan lahan."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Produk", href: "/products" }, { label: "Katalog" }]}
         variant="photo"
-        photo={{
-          src: "/images/compost-sieved.jpg",
-          alt: "Kompos yang telah diayak dan siap diaplikasikan ke lahan",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* Categories — three unequal doors, not three equal cards. */}
@@ -57,25 +52,25 @@ export default function ProductsPage() {
             Kategori produk
           </h2>
           <ul className="grid gap-x-8 gap-y-10 md:grid-cols-12">
-            {productCategories.map((c, i) => {
-              const count = getProductsByCategory(c.slug).length;
+            {productCategories.map((cat, i) => {
+              const count = getProductsByCategory(cat.slug).length;
               return (
                 <Reveal
                   as="li"
-                  key={c.slug}
+                  key={cat.slug}
                   delay={i * 70}
                   className={i === 0 ? "md:col-span-5" : i === 1 ? "md:col-span-4 md:mt-10" : "md:col-span-3 md:mt-20"}
                 >
                   <Link
-                    href={`/products/category/${c.slug}`}
+                    href={`/products/category/${cat.slug}`}
                     className="group flex h-full flex-col justify-between bg-ground-2 p-7 transition-colors duration-300 hover:bg-deep hover:text-ground md:p-8"
                   >
                     <div>
                       <h3 className="font-display text-[1.5rem] font-bold tracking-[-0.028em] md:text-[1.875rem]">
-                        {c.label}
+                        {cat.label}
                       </h3>
                       <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2 transition-colors duration-300 group-hover:text-ground/75">
-                        {c.description}
+                        {cat.description}
                       </p>
                     </div>
                     <p className="mt-7 flex items-center justify-between font-display text-[0.9375rem] font-bold text-accent transition-colors duration-300 group-hover:text-fresh">
@@ -95,11 +90,10 @@ export default function ProductsPage() {
         <div className="frame">
           <Reveal className="grid gap-y-6 md:grid-cols-12 md:gap-x-10">
             <h2 id="catalogue-heading" className="md:col-span-5">
-              Katalog Lengkap
+              {c.catalogueHeading}
             </h2>
             <p className="lede self-end text-ink-2 md:col-span-5 md:col-start-8">
-              Nama produk pada tiap pelat adalah identitas resmi produk. Rincian
-              teknis menyusul dari dokumen datasheet perusahaan.
+              {c.catalogueLede}
             </p>
           </Reveal>
 
@@ -126,16 +120,15 @@ export default function ProductsPage() {
         <div className="frame grid gap-y-8 md:grid-cols-12 md:gap-x-10">
           <Reveal className="md:col-span-5">
             <h2 id="datasheet-heading" className="text-h3">
-              Spesifikasi resmi tersedia atas permintaan
+              {c.datasheetHeading}
             </h2>
           </Reveal>
           <div className="space-y-5 text-[1.0625rem] leading-relaxed text-ink-2 md:col-span-6 md:col-start-7">
-            <Reveal delay={70}>
-              <p>
-                Komposisi, dosis, cara pakai, dan ketentuan registrasi hanya kami
-                publikasikan setelah diverifikasi dari dokumen resmi produk.
-              </p>
-            </Reveal>
+            {c.datasheetBody.map((p, i) => (
+              <Reveal key={i} delay={i === 0 ? 70 : 130}>
+                <p>{p}</p>
+              </Reveal>
+            ))}
             <Reveal delay={130} className="flex flex-wrap gap-3 pt-2">
               <Link href="/rfq" className="btn btn-primary press">
                 <FileText aria-hidden className="size-4" />

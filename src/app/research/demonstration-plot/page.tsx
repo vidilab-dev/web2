@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { demonstrationStages, researchPhotos } from "@/content/research";
+import { getPageContent } from "@/lib/pages";
+import { demonstrationPlotSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -16,54 +17,42 @@ export const metadata: Metadata = buildPageMetadata({
   imageAlt: "Persemaian tanaman untuk uji lapangan",
 });
 
-export default function DemonstrationPlotPage() {
+export default async function DemonstrationPlotPage() {
+  const c = await getPageContent(demonstrationPlotSpec);
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Demonstration
-            <br />
-            Plot
-          </>
-        }
-        lede="Uji lapangan terkontrol yang menjembatani hasil laboratorium dan keputusan di tingkat lahan."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[
           { label: "Riset & Inovasi", href: "/research" },
           { label: "Demonstration Plot" },
         ]}
         variant="photo"
-        photo={researchPhotos.field}
+        photo={c.headerPhoto}
       />
 
       <section className="bg-ground section-y">
         <div className="frame grid gap-y-12 md:grid-cols-12 md:gap-x-10">
           <Reveal className="md:col-span-5">
-            <p className="statement">
-              Hasil laboratorium baru bermakna setelah diuji pada lahan nyata.
-            </p>
+            <p className="statement">{c.statement}</p>
             <Reveal delay={80} className="mt-6 text-[1.0625rem] leading-relaxed text-ink-2">
-              <p>
-                Plot demonstrasi memungkinkan pengamatan respon tanaman dan tanah
-                pada kondisi yang tidak seragam, sehingga hasilnya lebih
-                representatif dibandingkan uji dalam ruang terkendali.
-              </p>
+              <p>{c.introBody}</p>
             </Reveal>
             <Reveal delay={140} className="mt-8">
               <figure>
                 <div className="relative aspect-[4/3] overflow-hidden bg-ground-3">
                   <Image
-                    src={researchPhotos.compost.src}
-                    alt={researchPhotos.compost.alt}
+                    src={c.soilPhoto.src}
+                    alt={c.soilPhoto.alt}
                     fill
                     sizes="(max-width: 768px) 100vw, 40vw"
                     quality={76}
                     className="photo"
                   />
                 </div>
-                <figcaption className="meta mt-3">
-                  Kondisi tanah dan bahan organik dicatat sebagai pembanding awal.
-                </figcaption>
+                <figcaption className="meta mt-3">{c.soilCaption}</figcaption>
               </figure>
             </Reveal>
           </Reveal>
@@ -71,10 +60,10 @@ export default function DemonstrationPlotPage() {
           {/* The four stages as an ordered list. */}
           <div className="md:col-span-6 md:col-start-7">
             <Reveal>
-              <h2 className="text-h3">Tahapan Plot Demonstrasi</h2>
+              <h2 className="text-h3">{c.stagesHeading}</h2>
             </Reveal>
             <ol className="mt-10">
-              {demonstrationStages.map((s, i) => (
+              {c.stages.map((s, i) => (
                 <Reveal
                   as="li"
                   key={s.stage}
@@ -102,7 +91,7 @@ export default function DemonstrationPlotPage() {
       <section className="bg-deep text-ground section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Ingin menjadi lokasi plot demonstrasi untuk wilayah Anda?
+            {c.closingStatement}
           </p>
           <Link href="/contact" className="btn btn-on-dark press">
             Hubungi Tim Riset <ArrowRight aria-hidden className="size-4" />

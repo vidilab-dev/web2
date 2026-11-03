@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { site } from "@/content/site";
 import { absoluteUrl } from "@/lib/utils";
+import { getPageContent } from "@/lib/pages";
+import { contactSpec } from "@/lib/page-specs";
 import { RouteChrome } from "@/components/layout/route-chrome";
 import { MotionInit } from "@/components/motion/motion-init";
 import "./globals.css";
@@ -103,7 +105,10 @@ const organizationSchema = {
   areaServed: "Indonesia",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // The footer shares the /contact page's details so one admin edit updates both.
+  const contact = await getPageContent(contactSpec);
+
   return (
     <html lang="id" className={`${display.variable} ${inter.variable}`}>
       <head>
@@ -114,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <MotionInit />
-        <RouteChrome>{children}</RouteChrome>
+        <RouteChrome contact={contact}>{children}</RouteChrome>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import { products, productCategories, type Product } from "@/content/products";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/motion/reveal";
 import { LogoMark } from "@/components/layout/logo";
+import type { HomeContent } from "@/lib/page-specs";
 
 /**
  * Editorial layout map. Spans and vertical offsets are deliberately uneven so
@@ -32,20 +33,16 @@ const plateTone: Record<Product["plate"], { plate: string; name: string; meta: s
   earth: { plate: "bg-earth text-white", name: "text-white", meta: "text-white", mark: "text-ground/15" },
 };
 
-export function ProductShowcase() {
+export function ProductShowcase({ c }: { c: HomeContent }) {
   return (
     <section aria-labelledby="products-heading" className="bg-ground section-y">
       <div className="frame">
         <Reveal className="grid gap-y-6 md:grid-cols-12 md:gap-x-10">
           <h2 id="products-heading" className="md:col-span-6">
-            Lini Produk
+            {c.productsHeading}
           </h2>
           <div className="md:col-span-6 md:self-end">
-            <p className="lede max-w-md text-ink-2">
-              Sembilan produk dalam tiga lini: pupuk organik, pupuk hayati, dan
-              pengendali hayati. Semuanya dirancang untuk bekerja dalam satu
-              program.
-            </p>
+            <p className="lede max-w-md text-ink-2">{c.productsLede}</p>
           </div>
         </Reveal>
 
@@ -123,22 +120,15 @@ export function ProductShowcase() {
         <Reveal delay={120} className="mt-14 md:mt-20">
           <div className="grid gap-8 md:grid-cols-12 md:gap-x-10">
             <div className="md:col-span-6 lg:col-span-5">
-              <p className="statement">
-                Spesifikasi teknis setiap produk tersedia pada datasheet resmi.
-              </p>
+              <p className="statement">{c.productsStatement}</p>
             </div>
             <div className="space-y-4 text-[1.0625rem] leading-relaxed text-ink-2 md:col-span-6 md:col-start-7 lg:col-span-5 lg:col-start-8">
-              <p>
-                Komposisi, dosis, cara pakai, dan ketentuan registrasi produk
-                hanya kami publikasikan setelah diverifikasi dari dokumen resmi.
-                Kami tidak menampilkan angka yang belum dikonfirmasi.
-              </p>
+              {c.productsBody.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
               <p className="flex items-start gap-2.5">
                 <Info aria-hidden className="mt-1 size-4 shrink-0 text-accent" />
-                <span>
-                  Minta datasheet lengkap untuk produk yang Anda butuhkan melalui
-                  halaman permintaan penawaran.
-                </span>
+                <span>{c.productsNote}</span>
               </p>
               <Link href="/rfq" className="btn btn-primary press mt-2">
                 Minta Datasheet &amp; Penawaran

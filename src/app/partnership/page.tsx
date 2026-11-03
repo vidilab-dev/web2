@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { partnershipTypes } from "@/content/home";
+import { getPageContent } from "@/lib/pages";
+import { partnershipSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -14,29 +15,25 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/partnership",
 });
 
-export default function PartnershipPage() {
+export default async function PartnershipPage() {
+  const c = await getPageContent(partnershipSpec);
+  const photos = [c.photo1, c.photo2, c.photo3, c.photo4];
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Kemitraan
-            <br />&amp; Kolaborasi
-          </>
-        }
-        lede="Kami membuka empat jalur kerja sama yang berbeda. Pilih yang paling dekat dengan posisi Anda."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Kemitraan" }]}
         variant="photo"
-        photo={{
-          src: "/images/farmer-harvest.jpg",
-          alt: "Petani memanen padi di lahan persawahan Indonesia",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* The four partnership routes, each given its own band with alternating tone. */}
       <ul>
-        {partnershipTypes.map((p, i) => {
+        {c.types.map((p, i) => {
           const dark = i % 2 === 1;
+          const photo = photos[i];
           return (
             <li key={p.title} className={dark ? "bg-deep text-ground" : "bg-ground"}>
               <div className="frame section-y-tight">
@@ -53,7 +50,7 @@ export default function PartnershipPage() {
                       {p.description}
                     </p>
 
-                    {p.title === "Agricultural Distribution" ? (
+                    {p.href === "/partnership/distributor" ? (
                       <Link
                         href="/partnership/distributor"
                         className={`btn press mt-8 ${dark ? "btn-on-dark" : "btn-primary"}`}
@@ -76,14 +73,16 @@ export default function PartnershipPage() {
                     className={i % 2 === 0 ? "md:col-span-5 md:col-start-8" : "md:col-span-5 md:col-start-1 md:row-start-1"}
                   >
                     <figure className="relative aspect-[4/3] overflow-hidden">
-                      <Image
-                        src={partnershipPhotos[i].src}
-                        alt={partnershipPhotos[i].alt}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 40vw"
-                        quality={76}
-                        className="photo"
-                      />
+                      {photo?.src ? (
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 40vw"
+                          quality={76}
+                          className="photo"
+                        />
+                      ) : null}
                     </figure>
                   </Reveal>
                 </div>
@@ -96,7 +95,7 @@ export default function PartnershipPage() {
       <section className="bg-ground-3 section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Tidak yakin jalur mana yang paling sesuai? Bicarakan dengan tim kami.
+            {c.closingStatement}
           </p>
           <Link href="/contact" className="btn btn-primary press">
             Hubungi Kami <ArrowRight aria-hidden className="size-4" />
@@ -106,22 +105,3 @@ export default function PartnershipPage() {
     </>
   );
 }
-
-const partnershipPhotos = [
-  {
-    src: "/images/plantation-stages.jpg",
-    alt: "Areal perkebunan kelapa sawit dengan berbagai fase pertumbuhan",
-  },
-  {
-    src: "/images/rice-terraces.jpg",
-    alt: "Terras sawah di Bali yang membentang mengikuti kontur lahan",
-  },
-  {
-    src: "/images/lab-microscope.jpg",
-    alt: "Peneliti mengamati sampel mikroorganisme di bawah mikroskop",
-  },
-  {
-    src: "/images/palm-fruit-bunch.jpg",
-    alt: "Buah segar sawit matang di pohon",
-  },
-];

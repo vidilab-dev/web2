@@ -28,7 +28,7 @@ export function PageHeader({
           <Breadcrumb items={crumbs} />
         </div>
         <div className="mt-9 grid gap-y-6 md:grid-cols-12 md:gap-x-10 md:mt-12">
-          <h1 className="md:col-span-7">{title}</h1>
+          <h1 className="whitespace-pre-line md:col-span-7">{title}</h1>
           {lede && (
             <p className="lede self-end text-ground/70 md:col-span-5 md:pb-2">{lede}</p>
           )}

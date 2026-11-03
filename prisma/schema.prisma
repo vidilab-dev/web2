@@ -169,6 +169,18 @@ model HomeBlock {
 }
 
 // ---------------------------------------------------------------------------
+// Per-page editable content (admin "Halaman" editor)
+// ---------------------------------------------------------------------------
+
+model PageContent {
+  // Route path such as "/" or "/about/vision-mission".
+  path String @id
+  // JSON payload keyed by the field keys declared in src/lib/page-specs.ts.
+  data Json
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
 // Media library
 // ---------------------------------------------------------------------------
 

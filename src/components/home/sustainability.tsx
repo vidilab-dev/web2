@@ -3,9 +3,23 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { sustainabilityPillars } from "@/content/home";
 import { Reveal } from "@/components/motion/reveal";
+import type { HomeContent } from "@/lib/page-specs";
 
-export function Sustainability() {
-  const [first, ...rest] = sustainabilityPillars;
+type Pillar = { title: string; description: string };
+
+/**
+ * Pillars are owned by the /sustainability page spec; the server page passes
+ * them here so one edit updates both views.
+ */
+export function Sustainability({
+  c,
+  pillars,
+}: {
+  c: HomeContent;
+  pillars: Pillar[];
+}) {
+  const list = pillars.length > 0 ? pillars : sustainabilityPillars;
+  const [first, ...rest] = list;
 
   return (
     <section aria-labelledby="sustainability-heading" className="bg-ground section-y">
@@ -13,8 +27,8 @@ export function Sustainability() {
       <Reveal>
         <figure className="relative aspect-[21/9] max-h-[32rem] w-full overflow-hidden bg-ground-3">
           <Image
-            src="/images/rice-terraces.jpg"
-            alt="Terras sawah di Tabanan, Bali, membentang mengikuti kontur lahan"
+            src={c.sustainabilityPhoto.src}
+            alt={c.sustainabilityPhoto.alt}
             fill
             sizes="100vw"
             quality={78}
@@ -27,17 +41,15 @@ export function Sustainability() {
         <div className="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
           <Reveal className="md:col-span-6">
             <h2 id="sustainability-heading">
-              Keberlanjutan
-              <br />
-              yang Dikerjakan
+              {c.sustainabilityHeading.split("\n").map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))}
             </h2>
           </Reveal>
           <Reveal delay={80} className="md:col-span-5 md:col-start-8 md:self-end">
-            <p className="lede text-ink-2">
-              Bagi kami, keberlanjutan bukan pernyataan. Ia adalah keputusan
-              teknis yang diambil di setiap tahap program, dari bahan baku
-              sampai cara lahan dikelola.
-            </p>
+            <p className="lede text-ink-2">{c.sustainabilityLede}</p>
           </Reveal>
         </div>
 

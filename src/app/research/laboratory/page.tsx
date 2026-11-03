@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { laboratoryAspects, researchPhotos } from "@/content/research";
+import { getPageContent } from "@/lib/pages";
+import { laboratorySpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -16,18 +17,20 @@ export const metadata: Metadata = buildPageMetadata({
   imageAlt: "Peneliti mengamati mikroorganisme di bawah mikroskop",
 });
 
-export default function LaboratoryPage() {
+export default async function LaboratoryPage() {
+  const c = await getPageContent(laboratorySpec);
+
   return (
     <>
       <PageHeader
-        title="Laboratorium"
-        lede="Tempat setiap klaim teknis diuji sebelum sampai ke tangan pengguna."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[
           { label: "Riset & Inovasi", href: "/research" },
           { label: "Laboratorium" },
         ]}
         variant="photo"
-        photo={researchPhotos.laboratory}
+        photo={c.headerPhoto}
       />
 
       <section className="bg-ground section-y">
@@ -35,8 +38,8 @@ export default function LaboratoryPage() {
           <Reveal className="md:col-span-5">
             <figure className="relative aspect-[4/5] overflow-hidden bg-ground-3">
               <Image
-                src={researchPhotos.culture.src}
-                alt={researchPhotos.culture.alt}
+                src={c.culturePhoto.src}
+                alt={c.culturePhoto.alt}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
                 quality={78}
@@ -45,28 +48,21 @@ export default function LaboratoryPage() {
             </figure>
             <Reveal delay={80}>
               <figcaption className="meta mt-3 max-w-sm">
-                Kultur mikroorganisme ditelaah sebagai dasar pengembangan produk hayati.
+                {c.cultureCaption}
               </figcaption>
             </Reveal>
           </Reveal>
 
           <div className="md:col-span-6 md:col-start-7">
             <Reveal>
-              <p className="statement">
-                Laboratorium memastikan kualitas sebelum produk meninggalkan
-                pintu produksi.
-              </p>
+              <p className="statement">{c.statement}</p>
             </Reveal>
             <Reveal delay={80} className="mt-6 text-[1.0625rem] leading-relaxed text-ink-2">
-              <p>
-                Pengujian laboratorium menjadi titik kontrol mutu di setiap
-                tahap: dari karakterisasi isolat awal, pengujian viabilitas
-                produksi, sampai pemeriksaan produk jadi.
-              </p>
+              <p>{c.introBody}</p>
             </Reveal>
 
             <ul className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2">
-              {laboratoryAspects.map((a, i) => (
+              {c.aspects.map((a, i) => (
                 <Reveal as="li" key={a.title} delay={i * 60}>
                   <h3 className="font-display text-[1.0625rem] font-bold tracking-[-0.018em]">
                     {a.title}
@@ -82,7 +78,7 @@ export default function LaboratoryPage() {
       <section className="bg-ground-2 section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Ingin melihat hasil pengujian untuk produk tertentu?
+            {c.closingStatement}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/rfq" className="btn btn-primary press">

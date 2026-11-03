@@ -14,6 +14,7 @@ const BUCKET = "product-photos";
 export const buckets = {
   products: "product-photos",
   articles: "article-photos",
+  pages: "page-photos",
 } as const;
 
 function storage(bucket: string) {

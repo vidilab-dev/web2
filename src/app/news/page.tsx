@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
 import { articleCategories } from "@/content/news";
 import { listArticles } from "@/lib/articles";
+import { getPageContent } from "@/lib/pages";
+import { newsSpec } from "@/lib/page-specs";
 import { formatDate } from "@/lib/utils";
 import { buildPageMetadata } from "@/app/layout";
 
@@ -18,24 +20,17 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default async function NewsPage() {
   const articles = await listArticles();
+  const content = await getPageContent(newsSpec);
   const [lead, ...others] = articles;
 
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Wawasan
-            <br />&amp; Berita
-          </>
-        }
-        lede="Catatan lapangan, edukasi pertanian, dan tulisan seputar agribisnis hayati."
+        title={content.headerTitle}
+        lede={content.headerLede}
         crumbs={[{ label: "Wawasan" }]}
         variant="photo"
-        photo={{
-          src: "/images/seed-trays.jpg",
-          alt: "Bibit tanaman muda dalam baki persemaian sebelum dipindahkan ke lahan",
-        }}
+        photo={content.headerPhoto}
       />
 
       {/* Category strip — a filter view into the archive. */}

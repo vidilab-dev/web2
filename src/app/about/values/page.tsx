@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { values } from "@/content/about";
+import { getPageContent } from "@/lib/pages";
+import { valuesSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -15,26 +16,21 @@ export const metadata: Metadata = buildPageMetadata({
 
 const tones = ["bg-ground", "bg-ground-2", "bg-ground", "bg-ground-2", "bg-ground"];
 
-export default function ValuesPage() {
-  const [lead, ...rest] = values;
+export default async function ValuesPage() {
+  const c = await getPageContent(valuesSpec);
+  // The layout needs at least one value to lead the page; fall back to the
+  // default list rather than render a broken band.
+  const list = c.values.length > 0 ? c.values : valuesSpec.defaults.values;
+  const [lead, ...rest] = list;
 
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Nilai
-            <br />
-            Perusahaan
-          </>
-        }
-        lede="Nilai hanya berguna ketika menentukan apa yang kami kerjakan, apa yang kami uji, dan apa yang kami tunda sampai terbukti."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Tentang Kami", href: "/about" }, { label: "Nilai Perusahaan" }]}
         variant="photo"
-        photo={{
-          src: "/images/farmer-harvest.jpg",
-          alt: "Petani memanen padi di lahan persawahan Indonesia",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* Lead value, given a full change of field. */}
@@ -85,7 +81,7 @@ export default function ValuesPage() {
       <section className="bg-ground-3 section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Nilai ini dijalankan oleh fungsi-fungsi di seluruh perusahaan.
+            {c.closingStatement}
           </p>
           <Link href="/about/organization" className="btn btn-primary press">
             Struktur Organisasi <ArrowRight aria-hidden className="size-4" />

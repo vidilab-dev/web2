@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { organization } from "@/content/about";
+import { getPageContent } from "@/lib/pages";
+import { organizationSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -14,31 +15,24 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/about/organization",
 });
 
-export default function OrganizationPage() {
+export default async function OrganizationPage() {
+  const c = await getPageContent(organizationSpec);
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Struktur
-            <br />
-            Organisasi
-          </>
-        }
-        lede="Tujuh fungsi yang menjalankan riset, produksi, mutu, dan pendampingan lapangan sebagai satu kesatuan operasional."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Tentang Kami", href: "/about" }, { label: "Struktur Organisasi" }]}
         variant="photo"
-        photo={{
-          src: "/images/lab-sem.jpg",
-          alt: "Tim peneliti bekerja menggunakan mikroskop elektron",
-        }}
+        photo={c.headerPhoto}
       />
 
       <section className="bg-ground section-y">
         <div className="frame grid gap-y-12 md:grid-cols-12 md:gap-x-10">
           {/* Functions as a definition list: term and scope always paired. */}
           <dl className="md:col-span-8">
-            {organization.functions.map((f, i) => (
+            {c.functions.map((f, i) => (
               <Reveal
                 as="div"
                 key={f.function}
@@ -59,10 +53,10 @@ export default function OrganizationPage() {
             <Reveal delay={80}>
               <div className="bg-ground-2 p-8">
                 <h2 className="font-display text-[1.125rem] font-bold tracking-[-0.022em]">
-                  Catatan penyusunan
+                  {c.noteHeading}
                 </h2>
                 <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
-                  {organization.note}
+                  {c.note}
                 </p>
               </div>
             </Reveal>
@@ -71,8 +65,8 @@ export default function OrganizationPage() {
               <figure className="mt-8">
                 <div className="relative aspect-[4/3] overflow-hidden bg-ground-3">
                   <Image
-                    src="/images/seed-trays.jpg"
-                    alt="Baki benih dan media tanam dalam fasilitas pembibitan"
+                    src={c.figurePhoto.src}
+                    alt={c.figurePhoto.alt}
                     fill
                     sizes="(max-width: 768px) 100vw, 30vw"
                     quality={76}
@@ -80,8 +74,7 @@ export default function OrganizationPage() {
                   />
                 </div>
                 <figcaption className="meta mt-3">
-                  Fungsi lapangan dan fungsi laboratorium bekerja pada satu program
-                  yang sama.
+                  {c.figureCaption}
                 </figcaption>
               </figure>
             </Reveal>

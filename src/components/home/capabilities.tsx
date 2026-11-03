@@ -1,11 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { capabilities } from "@/content/home";
 import { Reveal } from "@/components/motion/reveal";
+import type { HomeContent } from "@/lib/page-specs";
 
-export function Capabilities() {
-  const [lead, ...rest] = capabilities;
+export function Capabilities({ c }: { c: HomeContent }) {
+  const items = c.capabilities.map((cap) => ({
+    ...cap,
+    focus: cap.focus
+      .split(",")
+      .map((f) => f.trim())
+      .filter(Boolean),
+  }));
+  const [lead, ...rest] = items;
   const featured = rest.pop(); // the integrated solution breaks the rhythm below
 
   return (
@@ -13,10 +20,9 @@ export function Capabilities() {
       <div className="frame grid gap-y-12 md:grid-cols-12 md:gap-x-10">
         <Reveal className="md:col-span-12 lg:col-span-4">
           <div className="lg:sticky lg:top-28">
-            <h2 id="capabilities-heading">Yang Kami Kerjakan</h2>
+            <h2 id="capabilities-heading">{c.capabilitiesHeading}</h2>
             <p className="lede mt-6 max-w-sm text-ink-2">
-              Lima bidang kompetensi yang saling terhubung, dari produksi
-              sampai penerapan di lapangan.
+              {c.capabilitiesLede}
             </p>
           </div>
         </Reveal>
@@ -69,8 +75,8 @@ export function Capabilities() {
             >
               <div className="relative min-h-[16rem] md:col-span-4 md:min-h-[22rem]">
                 <Image
-                  src="/images/plantation-stages.jpg"
-                  alt="Areal perkebunan kelapa sawit dengan berbagai fase pertumbuhan tanaman"
+                  src={c.featuredPhoto.src}
+                  alt={c.featuredPhoto.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, 34vw"
                   quality={78}
@@ -85,7 +91,7 @@ export function Capabilities() {
                   {featured.description}
                 </p>
                 <span className="btn btn-on-dark press mt-9 w-fit">
-                  Lihat Pendekatannya <ArrowRight aria-hidden className="size-4" />
+                  {c.featuredCtaLabel} <ArrowRight aria-hidden className="size-4" />
                 </span>
               </div>
             </Link>

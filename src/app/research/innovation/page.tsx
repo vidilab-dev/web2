@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
-import { innovationSteps } from "@/content/research";
+import { getPageContent } from "@/lib/pages";
+import { innovationSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -14,21 +15,20 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/research/innovation",
 });
 
-export default function InnovationPage() {
+export default async function InnovationPage() {
+  const c = await getPageContent(innovationSpec);
+
   return (
     <>
       <PageHeader
-        title="Inovasi"
-        lede="Cara kami mengubah pertanyaan dari lapangan menjadi produk yang siap dipasarkan."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[
           { label: "Riset & Inovasi", href: "/research" },
           { label: "Inovasi" },
         ]}
         variant="photo"
-        photo={{
-          src: "/images/lab-sem.jpg",
-          alt: "Sampel penelitian di bawah mikroskop elektron",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* The five steps as a full-width band with alternating tone. */}
@@ -37,17 +37,16 @@ export default function InnovationPage() {
           <Reveal className="md:col-span-4">
             <div className="lg:sticky lg:top-28">
               <h2 id="innovation-steps" className="text-h3">
-                Lima Tahap Inovasi
+                {c.stepsHeading}
               </h2>
               <p className="lede mt-6 max-w-sm text-ink-2">
-                Sebuah proses yang dimulai dari kebutuhan nyata dan berakhir
-                dengan produk yang dapat diproduksi secara konsisten.
+                {c.stepsLede}
               </p>
             </div>
           </Reveal>
 
           <ol className="md:col-span-8">
-            {innovationSteps.map((s, i) => (
+            {c.steps.map((s, i) => (
               <Reveal
                 as="li"
                 key={s.title}
@@ -78,8 +77,8 @@ export default function InnovationPage() {
             <figure>
               <div className="relative aspect-[21/9] overflow-hidden bg-ground-3">
                 <Image
-                  src="/images/lab-microscope.jpg"
-                  alt="Peneliti mengamati sampel mikroorganisme di bawah mikroskop"
+                  src={c.figurePhoto.src}
+                  alt={c.figurePhoto.alt}
                   fill
                   sizes="100vw"
                   quality={78}
@@ -87,7 +86,7 @@ export default function InnovationPage() {
                 />
               </div>
               <figcaption className="meta mt-3 max-w-2xl">
-                Setiap konsep diuji di laboratorium sebelum menjadi produk.
+                {c.figureCaption}
               </figcaption>
             </figure>
           </Reveal>
@@ -97,7 +96,7 @@ export default function InnovationPage() {
       <section className="bg-ground-3 section-y-tight">
         <div className="frame flex flex-wrap items-center justify-between gap-6">
           <p className="statement max-w-2xl">
-            Ingin berkolaborasi dalam pengembangan produk hayati?
+            {c.closingStatement}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/partnership" className="btn btn-primary press">

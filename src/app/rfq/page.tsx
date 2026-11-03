@@ -3,6 +3,8 @@ import { FileText, ClipboardList, Timer } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { RfqForm } from "@/components/forms/rfq-form";
 import { Reveal } from "@/components/motion/reveal";
+import { getPageContent } from "@/lib/pages";
+import { rfqSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -12,45 +14,20 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/rfq",
 });
 
-const steps = [
-  {
-    icon: ClipboardList,
-    title: "Isi formulir",
-    description:
-      "Sampaikan jenis lahan, produk yang diminati, dan perkiraan kebutuhan Anda.",
-  },
-  {
-    icon: FileText,
-    title: "Kami susun penawaran",
-    description:
-      "Tim kami menyiapkan penawaran beserta datasheet resmi produk yang relevan.",
-  },
-  {
-    icon: Timer,
-    title: "Tindak lanjut",
-    description:
-      "Kami menghubungi Anda melalui email atau telepon dalam 1–2 hari kerja.",
-  },
-];
+/** Icons stay keyed by step position; extra rows reuse the last icon. */
+const stepIcons = [ClipboardList, FileText, Timer];
 
-export default function RfqPage() {
+export default async function RfqPage() {
+  const c = await getPageContent(rfqSpec);
+
   return (
     <>
       <PageHeader
-        title={
-          <>
-            Permintaan
-            <br />
-            Penawaran
-          </>
-        }
-        lede="Butuh penawaran harga atau datasheet teknis produk? Isi formulir berikut dan tim kami akan menyiapkan tanggapan yang sesuai dengan kebutuhan lahan Anda."
+        title={c.headerTitle}
+        lede={c.headerLede}
         crumbs={[{ label: "Permintaan Penawaran" }]}
         variant="photo"
-        photo={{
-          src: "/images/compost-pile.jpg",
-          alt: "Tumpukan kompos organik yang sedang dimatangkan",
-        }}
+        photo={c.headerPhoto}
       />
 
       {/* The three steps, asymmetric so it does not read as a card row. */}
@@ -60,22 +37,31 @@ export default function RfqPage() {
             Alur permintaan penawaran
           </h2>
           <ol className="grid gap-x-10 gap-y-10 md:grid-cols-12">
-            {steps.map((s, i) => (
-              <Reveal
-                as="li"
-                key={s.title}
-                delay={i * 70}
-                className={i === 0 ? "md:col-span-5" : i === 1 ? "md:col-span-4 md:mt-10" : "md:col-span-3 md:mt-20"}
-              >
-                <s.icon aria-hidden className="size-7 text-accent" />
-                <h3 className="mt-4 font-display text-[1.25rem] font-bold tracking-[-0.026em]">
-                  {s.title}
-                </h3>
-                <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
-                  {s.description}
-                </p>
-              </Reveal>
-            ))}
+            {c.steps.map((s, i) => {
+              const Icon = stepIcons[i] ?? stepIcons[stepIcons.length - 1];
+              return (
+                <Reveal
+                  as="li"
+                  key={s.title}
+                  delay={i * 70}
+                  className={
+                    i === 0
+                      ? "md:col-span-5"
+                      : i === 1
+                        ? "md:col-span-4 md:mt-10"
+                        : "md:col-span-3 md:mt-20"
+                  }
+                >
+                  <Icon aria-hidden className="size-7 text-accent" />
+                  <h3 className="mt-4 font-display text-[1.25rem] font-bold tracking-[-0.026em]">
+                    {s.title}
+                  </h3>
+                  <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
+                    {s.description}
+                  </p>
+                </Reveal>
+              );
+            })}
           </ol>
         </div>
       </section>
@@ -85,16 +71,10 @@ export default function RfqPage() {
           <Reveal className="md:col-span-4">
             <div className="lg:sticky lg:top-28">
               <h2 id="rfq-form-heading" className="text-h3">
-                Formulir Penawaran
+                {c.formHeading}
               </h2>
-              <p className="lede mt-5 max-w-sm text-ink-2">
-                Semakin rinci informasi yang Anda berikan, semakin akurat penawaran
-                yang dapat kami siapkan.
-              </p>
-              <p className="meta mt-6 max-w-sm">
-                Data Anda hanya digunakan untuk keperluan penawaran dan tidak
-                dibagikan kepada pihak ketiga.
-              </p>
+              <p className="lede mt-5 max-w-sm text-ink-2">{c.formLede}</p>
+              <p className="meta mt-6 max-w-sm">{c.formNote}</p>
             </div>
           </Reveal>
 

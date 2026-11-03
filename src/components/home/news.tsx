@@ -4,8 +4,9 @@ import { ArrowRight } from "lucide-react";
 import { listArticles } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
 import { Reveal } from "@/components/motion/reveal";
+import type { HomeContent } from "@/lib/page-specs";
 
-export async function News() {
+export async function News({ c }: { c: HomeContent }) {
   const articles = await listArticles();
   const [lead, ...others] = articles;
 
@@ -14,17 +15,15 @@ export async function News() {
       <div className="frame">
         <Reveal className="grid gap-y-6 md:grid-cols-12 md:gap-x-10">
           <h2 id="news-heading" className="md:col-span-5">
-            Wawasan
+            {c.newsHeading}
           </h2>
           <div className="md:col-span-5 md:col-start-8 md:self-end">
-            <p className="lede text-ink-2">
-              Catatan lapangan, edukasi pertanian, dan tulisan seputar
-              agribisnis hayati.
-            </p>
+            <p className="lede text-ink-2">{c.newsLede}</p>
           </div>
         </Reveal>
 
-        <div className="mt-14 grid gap-y-14 md:mt-20 md:grid-cols-12 md:gap-x-10">
+        {lead && (
+          <div className="mt-14 grid gap-y-14 md:mt-20 md:grid-cols-12 md:gap-x-10">
           {/* The lead article carries the most weight, one dominant story. */}
           <Reveal className="md:col-span-7">
             <article>
@@ -100,7 +99,8 @@ export async function News() {
               </Link>
             </Reveal>
           </ul>
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

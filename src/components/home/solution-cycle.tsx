@@ -3,7 +3,8 @@
 import { useCallback, useId, useState } from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { outcomeDimensions, solutionStages } from "@/content/home";
+import { outcomeDimensions, type SolutionStage } from "@/content/home";
+import type { HomeContent } from "@/lib/page-specs";
 import { cn } from "@/lib/utils";
 
 /**
@@ -13,18 +14,28 @@ import { cn } from "@/lib/utils";
  * description and every panel is present in the DOM at all times; scripting
  * only chooses which one is exposed. With scripting off, all five read as a
  * plain stacked list beside a single photograph, still complete, still correct.
+ *
+ * The stage list arrives as a prop: the server page overlays the admin-edited
+ * title/detail onto the fixed base stages (ids, numbering, images stay fixed).
  */
-export function SolutionCycle() {
+export function SolutionCycle({
+  c,
+  stages,
+}: {
+  c: HomeContent;
+  stages: SolutionStage[];
+}) {
   const [active, setActive] = useState(0);
   const uid = useId();
+  const dimensions = c.outcomeDimensions.length > 0 ? c.outcomeDimensions : outcomeDimensions;
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
-      const last = solutionStages.length - 1;
+      const last = stages.length - 1;
       let next: number | null = null;
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (index + 1) % solutionStages.length;
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (index + 1) % stages.length;
       if (e.key === "ArrowUp" || e.key === "ArrowLeft")
-        next = (index - 1 + solutionStages.length) % solutionStages.length;
+        next = (index - 1 + stages.length) % stages.length;
       if (e.key === "Home") next = 0;
       if (e.key === "End") next = last;
       if (next === null) return;
@@ -32,7 +43,7 @@ export function SolutionCycle() {
       setActive(next);
       document.getElementById(`${uid}-tab-${next}`)?.focus();
     },
-    [uid]
+    [uid, stages.length]
   );
 
   return (
@@ -43,16 +54,17 @@ export function SolutionCycle() {
             id="solution-heading"
             className="max-w-[16ch] text-[clamp(1.6rem,6.6vw,3.35rem)] md:max-w-none md:col-span-12 lg:col-span-8"
           >
-            <span className="whitespace-nowrap">Integrated Bio-Agribusiness</span>
-            <br />
-            Solution
+            {c.cycleHeading.split("\n").map((line, i) => (
+              <span
+                key={i}
+                className={`block${i === 0 ? " whitespace-nowrap" : ""}`}
+              >
+                {line}
+              </span>
+            ))}
           </h2>
           <div className="md:col-span-12 lg:col-span-4 lg:col-start-9 lg:self-end">
-            <p className="lede max-w-lg text-ground/70">
-              Kami tidak memulai dari produk. Kami memulai dari lahan, lalu
-              menyusun lima tahap yang saling menopang sampai hasil dievaluasi
-              dan siklus berikutnya disiapkan.
-            </p>
+            <p className="lede max-w-lg text-ground/70">{c.cycleLede}</p>
           </div>
         </div>
 
@@ -64,7 +76,7 @@ export function SolutionCycle() {
             aria-orientation="vertical"
             className="md:col-span-5"
           >
-            {solutionStages.map((s, i) => {
+            {stages.map((s, i) => {
               const isActive = i === active;
               return (
                 <li key={s.id}>
@@ -107,7 +119,7 @@ export function SolutionCycle() {
           {/* Shared panel, all five photographs and descriptions live in the DOM. */}
           <div className="md:col-span-7">
             <div className="relative aspect-[4/3] overflow-hidden bg-deep-3 md:aspect-[3/2]">
-              {solutionStages.map((s, i) => (
+              {stages.map((s, i) => (
                 <div
                   key={s.id}
                   role="tabpanel"
@@ -130,7 +142,7 @@ export function SolutionCycle() {
             </div>
 
             <div className="mt-8">
-              {solutionStages.map((s, i) => (
+              {stages.map((s, i) => (
                 <div key={s.id} hidden={i !== active}>
                   <p className="font-display text-[0.9375rem] font-bold text-fresh">
                     Tahap {s.index}: {s.title}
@@ -151,10 +163,10 @@ export function SolutionCycle() {
         {/* Outcome dimensions, named areas of focus, never invented figures. */}
         <div className="mt-20 md:mt-28">
           <h3 className="font-display text-[1.375rem] font-bold tracking-[-0.024em] text-fresh md:text-[1.75rem]">
-            Dimensi hasil yang kami tuju
+            {c.outcomesHeading}
           </h3>
           <dl className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {outcomeDimensions.map((o) => (
+            {dimensions.map((o) => (
               <div key={o.title} className="bg-deep-2 p-7">
                 <dt className="font-display text-[1.125rem] font-bold tracking-[-0.022em]">
                   {o.title}
@@ -165,10 +177,7 @@ export function SolutionCycle() {
               </div>
             ))}
           </dl>
-          <p className="meta mt-10 max-w-2xl text-ground/45">
-            Angka dampak spesifik hanya kami publikasikan setelah tersedia data
-            lapangan yang terverifikasi.
-          </p>
+          <p className="meta mt-10 max-w-2xl text-ground/45">{c.outcomesNote}</p>
         </div>
       </div>
     </section>

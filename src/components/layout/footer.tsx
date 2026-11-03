@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { contact, footerNavigation, site } from "@/content/site";
+import { footerNavigation, site } from "@/content/site";
 import { imageCredits } from "@/content/image-credits";
 import { products } from "@/content/products";
+import type { ContactDetails } from "@/lib/page-specs";
 import { LogoMark } from "./logo";
 
 const columns = [
@@ -12,7 +13,11 @@ const columns = [
   { heading: "Hubungi", links: [...footerNavigation.connect] },
 ];
 
-export function Footer() {
+/**
+ * The footer renders the same contact block the /contact page shows, passed
+ * down from the root layout so an admin edit updates both at once.
+ */
+export function Footer({ contact }: { contact: ContactDetails }) {
   const year = new Date().getFullYear();
 
   return (

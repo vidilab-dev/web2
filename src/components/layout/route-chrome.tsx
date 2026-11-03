@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import type { ContactDetails } from "@/lib/page-specs";
 import { Header } from "./header";
 import { Footer } from "./footer";
 
@@ -16,7 +17,13 @@ import { Footer } from "./footer";
  * robots.txt, hiding the public chrome from crawlers for those routes is
  * correct behaviour, not an SEO regression.
  */
-export function RouteChrome({ children }: { children: React.ReactNode }) {
+export function RouteChrome({
+  children,
+  contact,
+}: {
+  children: React.ReactNode;
+  contact: ContactDetails;
+}) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
 
@@ -33,7 +40,7 @@ export function RouteChrome({ children }: { children: React.ReactNode }) {
       <main id="main-content" tabIndex={-1}>
         {children}
       </main>
-      <Footer />
+      <Footer contact={contact} />
     </>
   );
 }
