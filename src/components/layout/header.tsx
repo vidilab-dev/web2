@@ -30,12 +30,15 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close menus and release scroll lock on navigation.
-  useEffect(() => {
+  // Reset menus on navigation — adjusting state during render, per React's
+  // guidance for "changing state when a prop changes" (no effect needed).
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setOpenMenu(null);
     setMobileOpen(false);
     setMobileSection(null);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -79,7 +82,7 @@ export function Header() {
           aria-label={`${"PT Bio Industri Nusantara"}, beranda`}
           className="shrink-0"
         >
-          <Logo className="h-7 w-auto md:h-8" />
+          <Logo className="h-12 w-auto md:h-14" tone={onDark ? "white" : "color"} />
         </Link>
 
         <nav aria-label="Navigasi utama" className="ml-auto hidden items-center gap-1 lg:flex">

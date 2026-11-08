@@ -2,21 +2,28 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * Bionusa identity mark — the three-arrow nutrient-cycle mark from the
- * official logo (transparent PNG, wordmark cropped away; the lockup carries
- * the company name as text next to it).
+ * Bionusa lockup — the official mark with the "Bionusa" wordmark beneath it
+ * (transparent PNG cropped from the brand file). The lockup is tall, so it is
+ * sized by height and every surface picks its own scale. `tone` follows the
+ * ground: the white cut for dark surfaces, the colour cut for light ones.
  */
-export function LogoMark({ className }: { className?: string }) {
+export function LogoMark({
+  className,
+  tone = "color",
+}: {
+  className?: string;
+  tone?: "color" | "white";
+}) {
   return (
     <Image
-      src="/images/bionusa-mark.png"
+      src={tone === "white" ? "/images/bionusa-logo-white.png" : "/images/bionusa-logo.png"}
       alt=""
       aria-hidden="true"
-      width={631}
-      height={877}
+      width={639}
+      height={1048}
       loading="eager"
-      sizes="64px"
-      className={cn("size-7 shrink-0 object-contain md:size-8", className)}
+      sizes="192px"
+      className={cn("h-12 w-auto shrink-0 object-contain", className)}
     />
   );
 }
@@ -56,11 +63,17 @@ export function WatermarkMark({ className }: { className?: string }) {
   );
 }
 
-/** Full lockup: mark plus the two-line wordmark. */
-export function Logo({ className }: { className?: string }) {
+/** Header lockup: Bionusa logo beside the legal name. */
+export function Logo({
+  className,
+  tone,
+}: {
+  className?: string;
+  tone?: "color" | "white";
+}) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
-      <LogoMark />
+      <LogoMark className="h-12 md:h-14" tone={tone} />
       <span className="flex flex-col leading-none">
         <span className="font-display text-[0.8125rem] font-extrabold tracking-[-0.012em] md:text-[0.9375rem]">
           PT BIO INDUSTRI

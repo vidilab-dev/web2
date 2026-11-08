@@ -26,7 +26,7 @@ export function Footer({ contact }: { contact: ContactDetails }) {
       <div className="frame pt-16 md:pt-24">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="flex items-center gap-3 md:gap-4">
-            <LogoMark className="size-10 md:size-14" />
+            <LogoMark className="h-16 w-auto md:h-20" tone="white" />
             <div className="flex flex-col leading-none">
               <span className="font-display text-[1.5rem] font-extrabold tracking-[-0.03em] md:text-[2.25rem]">
                 PT BIO INDUSTRI

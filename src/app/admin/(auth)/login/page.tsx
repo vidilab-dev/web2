@@ -15,7 +15,7 @@ export default async function AdminLoginPage() {
     <main className="flex min-h-[100svh] items-center justify-center bg-deep px-6 py-16">
       <div className="w-full max-w-md">
         <div className="flex items-center gap-3 text-ground">
-          <LogoMark className="size-9 text-fresh" />
+          <LogoMark className="h-14 w-auto" tone="white" />
           <div className="flex flex-col leading-none">
             <span className="font-display text-[1rem] font-extrabold tracking-[-0.012em]">
               PT BIO INDUSTRI

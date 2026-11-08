@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, FlaskConical, Microscope, Sprout, Lightbulb } from "lucide-react";
+import { ArrowRight, FlaskConical, Sprout, Lightbulb } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Reveal } from "@/components/motion/reveal";
 import { getPageContent } from "@/lib/pages";

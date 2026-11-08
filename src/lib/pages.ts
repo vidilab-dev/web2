@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { prisma } from "@/lib/db";
-import { getPageSpec, type PageSpec, type PageValue } from "@/lib/page-specs";
+import { type PageSpec, type PageValue } from "@/lib/page-specs";
 
 /**
  * Page content store.

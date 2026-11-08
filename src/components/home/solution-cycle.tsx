@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { outcomeDimensions, type SolutionStage } from "@/content/home";
 import type { HomeContent } from "@/lib/page-specs";
@@ -154,9 +155,9 @@ export function SolutionCycle({
               ))}
             </div>
 
-            <a href="/solutions/integrated" className="btn btn-on-dark press mt-9">
+            <Link href="/solutions/integrated" className="btn btn-on-dark press mt-9">
               Pelajari Solusi Terintegrasi <ArrowRight aria-hidden className="size-4" />
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ export default function NotFound() {
           {/* Big number, treated as an identity moment. */}
           <div className="md:col-span-5">
             <div className="flex items-center gap-4">
-              <LogoMark className="size-12 text-fresh" />
+              <LogoMark className="h-20 w-auto md:h-24" tone="white" />
               <span className="font-display text-[clamp(4rem,12vw,9rem)] font-extrabold leading-none tracking-[-0.05em] text-fresh">
                 404
               </span>

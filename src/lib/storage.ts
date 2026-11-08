@@ -8,8 +8,6 @@ import { createClient } from "@supabase/supabase-js";
  * Filenames are namespaced per product slug: "<slug>/<timestamp>-<name>".
  */
 
-const BUCKET = "product-photos";
-
 /** Buckets used by the admin panel. Created once in Supabase Storage as public. */
 export const buckets = {
   products: "product-photos",

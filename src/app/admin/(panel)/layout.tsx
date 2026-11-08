@@ -35,7 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-[100svh] w-64 shrink-0 flex-col bg-deep text-ground lg:flex">
         <div className="flex items-center gap-2.5 px-6 py-6">
-          <LogoMark className="size-7 text-fresh" />
+          <LogoMark className="h-10 w-auto" tone="white" />
           <span className="font-display text-[0.875rem] font-extrabold tracking-[-0.012em]">
             PT BIN Admin
           </span>
