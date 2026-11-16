@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState, useRef, useState } from "react";
+import { useEffect, useActionState, useRef, useState, useTransition } from "react";
 import { Upload } from "lucide-react";
 
 /**
@@ -25,6 +25,10 @@ export function PhotoPicker({
   previewAlt?: string;
 }) {
   const [state, formAction, pending] = useActionState<UploadState, FormData>(action, undefined);
+  // The picker has no <form> of its own (nested forms are invalid), so the
+  // button dispatches the action directly — React requires that call to run
+  // inside a transition, otherwise isPending never updates.
+  const [, startTransition] = useTransition();
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,7 +73,9 @@ export function PhotoPicker({
             const fd = new FormData();
             const file = inputRef.current?.files?.[0];
             if (file) fd.append("photo", file);
-            void formAction(fd);
+            startTransition(() => {
+              void formAction(fd);
+            });
           }}
           className="btn btn-secondary press"
         >
