@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Security-update channel chosen for the 16.4.3 → 16.4.6 advisory upgrade.
+  experimental: {
+    agentUpgrade: "security",
+  },
   turbopack: {
     root: process.cwd(),
   },
