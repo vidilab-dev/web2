@@ -359,6 +359,12 @@ html.js-motion [data-reveal].is-revealed {
   transition-delay: var(--reveal-delay, 0ms);
 }
 
+/* Bootstrapped reveals (already on screen at hydration / first paint of a
+   navigated route) land in the same frame — never gated behind an animation. */
+html.js-motion [data-reveal].is-instant {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.js-motion [data-reveal] {
     opacity: 1 !important;
