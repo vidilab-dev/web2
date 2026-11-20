@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ProductPlate } from "@/components/products/plate";
 import { Reveal } from "@/components/motion/reveal";
 import { getCategory, getProduct, products } from "@/content/products";
-import { getProductWithSpec, specFields } from "@/lib/products";
+import { listProductsWithSpec, specFields } from "@/lib/products";
 import { site } from "@/content/site";
 import { buildPageMetadata } from "@/app/layout";
 
@@ -48,14 +48,13 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await getProductWithSpec(slug);
+  if (!getProduct(slug)) notFound();
+  const catalogue = await listProductsWithSpec();
+  const product = catalogue.find((p) => p.slug === slug);
   if (!product) notFound();
 
-  const localFallback = getProduct(slug);
-  if (!localFallback) notFound();
-
   const category = getCategory(product.category);
-  const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
+  const related = catalogue.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
 
   const schema = {
     "@context": "https://schema.org",
@@ -139,7 +138,7 @@ export default async function ProductDetailPage({
                     fill
                     sizes="(max-width: 768px) 100vw, 55vw"
                     quality={76}
-                    className="photo"
+                    className={product.imageUrl ? "object-contain p-4" : "photo"}
                   />
                 </div>
                 <figcaption className="meta mt-3 max-w-2xl">
@@ -215,7 +214,7 @@ export default async function ProductDetailPage({
             <ul className="mt-12 grid gap-6 md:grid-cols-3">
               {related.map((p, i) => (
                 <Reveal as="li" key={p.slug} delay={i * 70}>
-                  <ProductPlate product={p} size="sm" className="min-h-[16rem] h-full" />
+                  <ProductPlate product={p} imageUrl={p.imageUrl} size="sm" className="min-h-[16rem] h-full" />
                 </Reveal>
               ))}
             </ul>

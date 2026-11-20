@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { productCategories, type Product } from "@/content/products";
 import { cn } from "@/lib/utils";
@@ -35,19 +36,15 @@ const tone: Record<Product["plate"], { plate: string; name: string; meta: string
   },
 };
 
-/**
- * Product identity plate.
- *
- * Deliberately a designed label rather than a fabricated product photograph:
- * PT BIN's actual packaging photography has not been supplied, and inventing
- * product shots would misrepresent what the company makes.
- */
+/** Product identity plate, with an optional real pack image and a label-only fallback. */
 export function ProductPlate({
   product,
+  imageUrl,
   className,
   size = "md",
 }: {
   product: Product;
+  imageUrl?: string | null;
   className?: string;
   size?: "sm" | "md";
 }) {
@@ -94,7 +91,19 @@ export function ProductPlate({
         </h3>
       </div>
 
-      <div className="relative mt-8">
+      {imageUrl && (
+        <div className={cn("relative my-4 w-full shrink-0", size === "md" ? "h-36 md:h-44" : "h-28 md:h-32")}>
+          <Image
+            src={imageUrl}
+            alt={`Kemasan produk ${product.name}`}
+            fill
+            sizes="(max-width: 768px) 85vw, (max-width: 1024px) 45vw, 33vw"
+            className="object-contain"
+          />
+        </div>
+      )}
+
+      <div className={cn("relative", imageUrl ? "mt-2" : "mt-8")}>
         <p className={cn("max-w-sm text-[0.9375rem] leading-snug", t.blurb)}>
           {/* The line's name folds into the sentence; it is not a label above the title. */}
           <span className={cn("font-display font-bold", t.meta)}>

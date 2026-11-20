@@ -23,7 +23,8 @@ function storage(bucket: string) {
 }
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
-const MAX_BYTES = 5 * 1024 * 1024;
+// Leave room for multipart metadata under the deployment request limit.
+const MAX_BYTES = 3 * 1024 * 1024;
 
 function safeName(name: string): string {
   return name
@@ -43,7 +44,7 @@ export async function uploadPhoto(
     return { ok: false, error: "Format harus JPG, PNG, WebP, atau AVIF." };
   }
   if (file.size > MAX_BYTES) {
-    return { ok: false, error: "Ukuran maksimal 5 MB." };
+    return { ok: false, error: "Ukuran maksimal 3 MB. Perkecil foto lalu coba lagi." };
   }
   if (file.size === 0) {
     return { ok: false, error: "Berkas kosong." };
@@ -64,7 +65,11 @@ export async function uploadPhoto(
   });
   if (error) {
     console.error("[storage] upload failed", bucket, namespace, error.message);
-    return { ok: false, error: "Gagal mengunggah. Coba lagi." };
+    const message = error.message.toLowerCase();
+    if (message.includes("bucket") && message.includes("not found")) {
+      return { ok: false, error: "Bucket penyimpanan belum tersedia. Hubungi pengelola situs." };
+    }
+    return { ok: false, error: "Gagal mengunggah ke penyimpanan. Periksa koneksi dan coba lagi." };
   }
 
   const { data } = store.getPublicUrl(path);

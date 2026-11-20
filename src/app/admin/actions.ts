@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSession, destroySession, verifyPassword, isAuthenticated } from "@/lib/auth";
 import { updateSubmissionStatus, type SubmissionStatus } from "@/lib/submissions";
-import { saveProductSpec } from "@/lib/products";
+import { saveProductSpec, saveProductImage } from "@/lib/products";
+import { getProduct, productCategories } from "@/content/products";
 import { createArticle, updateArticle } from "@/lib/articles";
 import { uploadPhoto, uploadProductPhoto } from "@/lib/storage";
 import { getPageSpec, type PageValue } from "@/lib/page-specs";
@@ -27,12 +28,24 @@ export async function logoutAction() {
   redirect("/admin/login");
 }
 
+function revalidateProducts(slug: string) {
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/products/[slug]", "page");
+  for (const category of productCategories) {
+    revalidatePath(`/products/category/${category.slug}`);
+  }
+  revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${slug}`);
+}
+
 /** Persists the product datasheet form from /admin/products/[slug]. */
 export async function saveProductSpecAction(
   slug: string,
   _prev: unknown,
   formData: FormData
 ) {
+  if (!(await isAuthenticated())) return { fieldErrors: { form: "Sesi berakhir. Silakan masuk kembali." } };
   const result = await saveProductSpec(slug, {
     composition: String(formData.get("composition") ?? ""),
     dosage: String(formData.get("dosage") ?? ""),
@@ -46,9 +59,7 @@ export async function saveProductSpecAction(
 
   if (!result.ok) return { fieldErrors: result.fieldErrors };
 
-  revalidatePath(`/products/${slug}`);
-  revalidatePath("/products");
-  revalidatePath("/admin/products");
+  revalidateProducts(slug);
   redirect(`/admin/products/${slug}?saved=1`);
 }
 
@@ -58,6 +69,8 @@ export async function uploadProductPhotoAction(
   _prev: unknown,
   formData: FormData
 ) {
+  if (!(await isAuthenticated())) return { error: "Sesi berakhir. Silakan masuk kembali." };
+  if (!getProduct(slug)) return { error: "Produk tidak ditemukan." };
   const file = formData.get("photo");
   if (!(file instanceof File) || file.size === 0) {
     return { error: "Pilih berkas foto dulu." };
@@ -66,12 +79,11 @@ export async function uploadProductPhotoAction(
   const uploaded = await uploadProductPhoto(slug, file);
   if (!uploaded.ok) return { error: uploaded.error };
 
-  const saved = await saveProductSpec(slug, { imageUrl: uploaded.url, dataStatus: "placeholder" });
-  if (!saved.ok) return { error: "Foto terunggah, tapi gagal disimpan ke produk." };
+  const saved = await saveProductImage(slug, uploaded.url);
+  if (!saved) return { error: "Foto terunggah, tapi gagal disimpan ke produk. Coba lagi." };
 
-  revalidatePath(`/products/${slug}`);
-  revalidatePath("/admin/products");
-  redirect(`/admin/products/${slug}?saved=1`);
+  revalidateProducts(slug);
+  return { url: uploaded.url };
 }
 
 function articlePayload(formData: FormData) {

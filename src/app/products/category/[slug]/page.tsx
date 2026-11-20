@@ -5,11 +5,8 @@ import { ArrowRight, FileText } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProductPlate } from "@/components/products/plate";
 import { Reveal } from "@/components/motion/reveal";
-import {
-  getProductsByCategory,
-  productCategories,
-  type ProductCategorySlug,
-} from "@/content/products";
+import { productCategories } from "@/content/products";
+import { listProductsWithSpec } from "@/lib/products";
 import { buildPageMetadata } from "@/app/layout";
 
 const slugs = productCategories.map((c) => c.slug);
@@ -44,7 +41,8 @@ export default async function ProductCategoryPage({
   const category = productCategories.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  const items = getProductsByCategory(slug as ProductCategorySlug);
+  const products = await listProductsWithSpec();
+  const items = products.filter((p) => p.category === category.slug);
 
   return (
     <>
@@ -78,7 +76,7 @@ export default async function ProductCategoryPage({
                   delay={(i % 3) * 70}
                   className={offsets[i % offsets.length]}
                 >
-                  <ProductPlate product={p} className="min-h-[19rem] h-full" />
+                  <ProductPlate product={p} imageUrl={p.imageUrl} className="min-h-[19rem] h-full" />
                 </Reveal>
               ))}
             </ul>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload } from "lucide-react";
 import { saveProductSpecAction, uploadProductPhotoAction } from "@/app/admin/actions";
@@ -52,13 +52,26 @@ const photoField = {
 } as const;
 
 type State = { fieldErrors?: Record<string, string> } | undefined;
-type UploadState = { error?: string } | undefined;
+type UploadState = { url?: string; error?: string } | undefined;
+const MAX_PHOTO_SIZE = 3 * 1024 * 1024;
 
-function PhotoUploader({ slug, current }: { slug: string; current: string | null }) {
-  const bound = uploadProductPhotoAction.bind(null, slug);
-  const [state, action, pending] = useActionState<UploadState, FormData>(bound, undefined);
+function PhotoUploader({ current, state, action, pending, disabled }: {
+  current: string;
+  state: UploadState;
+  action: (data: FormData) => void;
+  pending: boolean;
+  disabled: boolean;
+}) {
   const [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   // Not a <form>: this uploader sits inside the product spec form, and a
   // nested form is invalid HTML that breaks hydration. The button dispatches
@@ -83,23 +96,39 @@ function PhotoUploader({ slug, current }: { slug: string; current: string | null
           <input
             ref={inputRef}
             type="file"
-            name="photo"
+            disabled={disabled}
             accept="image/jpeg,image/png,image/webp,image/avif"
             aria-label="Pilih berkas foto produk"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              setPreview(f ? URL.createObjectURL(f) : null);
+              setError(null);
+              setSelected(false);
+              setPreview(null);
+              if (!f) return;
+              if (f.size === 0 || f.size > MAX_PHOTO_SIZE) {
+                setError(f.size === 0 ? "Berkas foto kosong. Pilih foto lain." : "Ukuran foto maksimal 3 MB. Perkecil foto lalu coba lagi.");
+                e.target.value = "";
+                return;
+              }
+              setSelected(true);
+              setPreview(URL.createObjectURL(f));
             }}
             className="max-w-full text-[0.875rem] text-ink-2 file:mr-3 file:rounded-[2px] file:border-0 file:bg-deep file:px-4 file:py-2 file:text-[0.875rem] file:font-bold file:text-ground"
           />
           <button
             type="button"
-            disabled={pending}
+            disabled={disabled || !selected}
             onClick={() => {
-              const fd = new FormData();
+              if (disabled) return;
               const file = inputRef.current?.files?.[0];
-              if (file) fd.append("photo", file);
-              void action(fd);
+              if (!file || file.size === 0 || file.size > MAX_PHOTO_SIZE) {
+                setError("Pilih foto berukuran maksimal 3 MB terlebih dahulu.");
+                return;
+              }
+              setError(null);
+              const fd = new FormData();
+              fd.append("photo", file);
+              startTransition(() => action(fd));
             }}
             className="btn btn-secondary press"
           >
@@ -107,10 +136,15 @@ function PhotoUploader({ slug, current }: { slug: string; current: string | null
             {pending ? "Mengunggah…" : "Unggah & Pasang"}
           </button>
         </div>
-        <p className="meta mt-2">JPG, PNG, WebP, atau AVIF · maksimal 5 MB.</p>
-        {state?.error && (
+        <p className="meta mt-2">JPG, PNG, WebP, atau AVIF · maksimal 3 MB.</p>
+        {!pending && (error || state?.error) && (
           <p role="alert" className="mt-2 text-[0.875rem] font-semibold text-red-800">
-            {state.error}
+            {error || state?.error}
+          </p>
+        )}
+        {state?.url && !selected && !error && (
+          <p role="status" className="meta mt-2">
+            Foto berhasil diunggah. Path foto sudah diperbarui; simpan datasheet untuk menyimpan perubahan lainnya.
           </p>
         )}
       </div>
@@ -120,9 +154,30 @@ function PhotoUploader({ slug, current }: { slug: string; current: string | null
 export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; saved: boolean }) {
   const bound = saveProductSpecAction.bind(null, product.slug);
   const [state, action, pending] = useActionState<State, FormData>(bound, undefined);
+  const [imageUrl, setImageUrl] = useState(product.imageUrl ?? "");
+  const [uploadVersion, setUploadVersion] = useState(0);
+  const [uploadState, uploadAction, uploadPending] = useActionState<UploadState, FormData>(
+    async (previous, formData) => {
+      try {
+        const result: UploadState = await uploadProductPhotoAction(product.slug, previous, formData);
+        if (result?.url) {
+          setImageUrl(result.url);
+          // Reset the selected file and release its preview after a successful upload.
+          setUploadVersion((version) => version + 1);
+        }
+        return result;
+      } catch {
+        return { error: "Layanan unggah belum dapat dihubungi. Silakan coba lagi." };
+      }
+    },
+    undefined,
+  );
+  const busy = pending || uploadPending;
 
   return (
-    <form action={action} className="space-y-8">
+    <form action={action} onSubmit={(event) => {
+      if (busy) event.preventDefault();
+    }} className="space-y-8">
       {saved && (
         <p role="status" className="border-l-4 border-accent bg-ground p-4 text-[0.9375rem] font-semibold text-ink">
           Datasheet tersimpan. Halaman publik produk ini sudah diperbarui.
@@ -187,7 +242,14 @@ export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; 
           Unggah langsung dari sini, atau tulis path manual jika berkas sudah ada
           di pustaka media. Hanya foto asli produk — bukan foto suasana atau stok.
         </p>
-        <PhotoUploader slug={product.slug} current={product.imageUrl} />
+        <PhotoUploader
+          key={uploadVersion}
+          current={imageUrl}
+          state={uploadState}
+          action={uploadAction}
+          pending={uploadPending}
+          disabled={busy}
+        />
         <div className="mt-4">
           <label
             htmlFor="spec-imageUrl"
@@ -199,7 +261,9 @@ export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; 
             id="spec-imageUrl"
             name="imageUrl"
             type="text"
-            defaultValue={product.imageUrl ?? ""}
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+            readOnly={busy}
             placeholder={photoField.hint}
             aria-describedby="spec-imageUrl-hint"
             className="mt-2 w-full rounded-[2px] border border-ink/20 bg-white p-3 text-[0.875rem] tracking-[-0.01em] text-ink placeholder:text-ink/35 focus:border-accent focus:outline-none"
@@ -260,7 +324,7 @@ export function ProductSpecForm({ product, saved }: { product: ProductWithSpec; 
       </section>
 
       <div className="flex flex-wrap items-center gap-3">
-        <button type="submit" disabled={pending} className="btn btn-primary press">
+        <button type="submit" disabled={busy} className="btn btn-primary press">
           <Save aria-hidden className="size-4" />
           {pending ? "Menyimpan…" : "Simpan Datasheet"}
         </button>

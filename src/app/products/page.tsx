@@ -4,7 +4,8 @@ import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProductPlate } from "@/components/products/plate";
 import { Reveal } from "@/components/motion/reveal";
-import { productCategories, products, getProductsByCategory } from "@/content/products";
+import { productCategories } from "@/content/products";
+import { listProductsWithSpec } from "@/lib/products";
 import { getPageContent } from "@/lib/pages";
 import { productsSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
@@ -33,7 +34,10 @@ const layout = [
 ];
 
 export default async function ProductsPage() {
-  const c = await getPageContent(productsSpec);
+  const [c, products] = await Promise.all([
+    getPageContent(productsSpec),
+    listProductsWithSpec(),
+  ]);
 
   return (
     <>
@@ -53,7 +57,7 @@ export default async function ProductsPage() {
           </h2>
           <ul className="grid gap-x-8 gap-y-10 md:grid-cols-12">
             {productCategories.map((cat, i) => {
-              const count = getProductsByCategory(cat.slug).length;
+              const count = products.filter((p) => p.category === cat.slug).length;
               return (
                 <Reveal
                   as="li"
@@ -107,7 +111,7 @@ export default async function ProductsPage() {
                   delay={(i % 3) * 70}
                   className={cn("md:col-span-6", l.span, l.offset)}
                 >
-                  <ProductPlate product={p} className={cn("h-full", l.height)} />
+                  <ProductPlate product={p} imageUrl={p.imageUrl} className={cn("h-full", l.height)} />
                 </Reveal>
               );
             })}

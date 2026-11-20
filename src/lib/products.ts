@@ -193,4 +193,19 @@ export async function saveProductSpec(
   }
 }
 
+/** Updating a photo must never clear the datasheet or verification status. */
+export async function saveProductImage(slug: string, imageUrl: string): Promise<boolean> {
+  if (!getLocalProduct(slug)) return false;
+  const db = prisma();
+  if (!db) return false;
+  try {
+    await seedProduct(slug);
+    await db.product.update({ where: { slug }, data: { imageUrl } });
+    return true;
+  } catch (err) {
+    console.error("[products] image write failed", slug, err);
+    return false;
+  }
+}
+
 export { specFields };

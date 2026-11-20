@@ -8,6 +8,7 @@ import { Sustainability } from "@/components/home/sustainability";
 import { Partnership } from "@/components/home/partnership";
 import { News } from "@/components/home/news";
 import { getPageContent } from "@/lib/pages";
+import { listProductsWithSpec } from "@/lib/products";
 import {
   homeSpec,
   partnershipSpec,
@@ -17,7 +18,10 @@ import {
 import { solutionStages } from "@/content/home";
 
 export default async function HomePage() {
-  const c = await getPageContent(homeSpec);
+  const [c, products] = await Promise.all([
+    getPageContent(homeSpec),
+    listProductsWithSpec(),
+  ]);
 
   // Pillars and partnership tracks are owned by their own page specs so a
   // single admin edit updates the detail page and this preview alike.
@@ -33,7 +37,7 @@ export default async function HomePage() {
       <Hero c={c} />
       <Introduction c={c} />
       <Capabilities c={c} />
-      <ProductShowcase c={c} />
+      <ProductShowcase c={c} products={products} />
       <SolutionCycle c={c} stages={stages} />
       <Research c={c} />
       <Sustainability c={c} pillars={sustainability.pillars} />

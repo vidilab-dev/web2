@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   // Security-update channel chosen for the 16.4.3 → 16.4.6 advisory upgrade.
   experimental: {
     agentUpgrade: "security",
+    // Stay below the deployment request cap while allowing multipart overhead.
+    serverActions: { bodySizeLimit: "4mb" },
   },
   turbopack: {
     root: process.cwd(),

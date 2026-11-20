@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight, Info } from "lucide-react";
-import { products, productCategories, type Product } from "@/content/products";
+import Image from "next/image";
+import { productCategories, type Product } from "@/content/products";
+import type { ProductWithSpec } from "@/lib/products";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/motion/reveal";
 import { WatermarkMark } from "@/components/layout/logo";
@@ -34,7 +36,7 @@ const plateTone: Record<Product["plate"], { plate: string; name: string; meta: s
   earth: { plate: "bg-earth text-white", name: "text-white", meta: "text-white", mark: "text-ground/15" },
 };
 
-export function ProductShowcase({ c }: { c: HomeContent }) {
+export function ProductShowcase({ c, products }: { c: HomeContent; products: ProductWithSpec[] }) {
   return (
     <section aria-labelledby="products-heading" className="bg-ground section-y">
       <div className="frame">
@@ -96,7 +98,19 @@ export function ProductShowcase({ c }: { c: HomeContent }) {
                     </h3>
                   </div>
 
-                  <div className="relative mt-8">
+                  {product.imageUrl && (
+                    <div className="relative my-4 h-32 w-full shrink-0 md:h-40">
+                      <Image
+                        src={product.imageUrl}
+                        alt={`Kemasan produk ${product.name}`}
+                        fill
+                        sizes="(max-width: 640px) 85vw, (max-width: 1280px) 45vw, 33vw"
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
+
+                  <div className={cn("relative", product.imageUrl ? "mt-2" : "mt-8")}>
                     <p
                       className={cn(
                         "max-w-sm text-[0.9375rem] leading-snug",
