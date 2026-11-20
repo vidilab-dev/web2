@@ -51,8 +51,9 @@
   /* Boxed site: the whole public surface sits in one box on the canvas mat. */
   --box-gutter: clamp(1rem, 2.2vw, 1.75rem);
   --box-maxw: 112rem;
-  --section-y: clamp(6.5rem, 12vw, 14rem);
-  --section-y-tight: clamp(4.5rem, 8vw, 8rem);
+  /* Compact section rhythm: enough separation without long empty bands. */
+  --section-y: clamp(3.5rem, 6vw, 6rem);
+  --section-y-tight: clamp(2.5rem, 4vw, 4rem);
 
   --radius-plate: 2px;
 
