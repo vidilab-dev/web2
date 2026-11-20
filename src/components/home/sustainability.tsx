@@ -53,7 +53,8 @@ export function Sustainability({
           </Reveal>
         </div>
 
-        {/* Asymmetric 3 + 2, with the lead pillar carrying more weight. */}
+        {/* The lead pillar carries the weight; four tiles fill every row exactly —
+            half-width through md/lg, the tight 2×2 mosaic only when xl can hold it. */}
         <div className="mt-14 grid gap-6 md:mt-20 md:grid-cols-12">
           <Reveal className="md:col-span-6 md:row-span-2">
             <div className="flex h-full flex-col justify-between bg-deep p-8 text-ground md:p-12">
@@ -70,7 +71,7 @@ export function Sustainability({
             <Reveal
               key={p.title}
               delay={(i % 2) * 70}
-              className={i < 2 ? "md:col-span-3" : "md:col-span-4"}
+              className="md:col-span-6 xl:col-span-3"
             >
               <div className="h-full bg-ground-2 p-8">
                 <h3 className="font-display text-[1.125rem] font-bold tracking-[-0.022em]">

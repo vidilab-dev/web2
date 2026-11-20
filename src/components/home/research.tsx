@@ -49,7 +49,7 @@ export function Research({ c }: { c: HomeContent }) {
             <p>{c.researchBody}</p>
           </Reveal>
 
-          <ul className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2">
+          <ul className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
             {c.researchActivities.map((a, i) => (
               <Reveal as="li" key={a.title} delay={i * 60}>
                 <h3 className="font-display text-[1.0625rem] font-bold tracking-[-0.018em]">

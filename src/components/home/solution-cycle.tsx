@@ -75,7 +75,7 @@ export function SolutionCycle({
             role="tablist"
             aria-label="Tahapan program bio-agribisnis terintegrasi"
             aria-orientation="vertical"
-            className="md:col-span-5"
+            className="md:col-span-12 lg:col-span-5"
           >
             {stages.map((s, i) => {
               const isActive = i === active;
@@ -118,7 +118,7 @@ export function SolutionCycle({
           </ol>
 
           {/* Shared panel, all five photographs and descriptions live in the DOM. */}
-          <div className="md:col-span-7">
+          <div className="md:col-span-12 lg:col-span-7">
             <div className="relative aspect-[4/3] overflow-hidden bg-deep-3 md:aspect-[3/2]">
               {stages.map((s, i) => (
                 <div
@@ -166,7 +166,7 @@ export function SolutionCycle({
           <h3 className="font-display text-[1.375rem] font-bold tracking-[-0.024em] text-fresh md:text-[1.75rem]">
             {c.outcomesHeading}
           </h3>
-          <dl className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mt-9 grid gap-5 sm:grid-cols-2">
             {dimensions.map((o) => (
               <div key={o.title} className="bg-deep-2 p-7">
                 <dt className="font-display text-[1.125rem] font-bold tracking-[-0.022em]">

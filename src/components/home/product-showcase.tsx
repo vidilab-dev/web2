@@ -10,20 +10,21 @@ import type { HomeContent } from "@/lib/page-specs";
  * Editorial layout map. Spans and vertical offsets are deliberately uneven so
  * the catalogue reads as a spread rather than a uniform card grid.
  *
- * The mosaic only engages at lg and up, where each column is wide enough to
+ * The mosaic only engages at xl and up, where each column is wide enough to
  * hold a product name at display size. Below that the catalogue is a plain
  * two-up grid, so a long name like BIOAGRODECO never overhangs its neighbour.
+ * The longest name therefore sits in a col-span-5 slot, never the col-span-3.
  */
 const layout = [
-  { span: "lg:col-span-5", offset: "", height: "min-h-[19rem] md:min-h-[24rem]" },
-  { span: "lg:col-span-3", offset: "lg:mt-20", height: "min-h-[16rem] md:min-h-[20rem]" },
-  { span: "lg:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
-  { span: "lg:col-span-4", offset: "lg:mt-12", height: "min-h-[18rem] md:min-h-[23rem]" },
-  { span: "lg:col-span-4", offset: "", height: "min-h-[16rem] md:min-h-[21rem]" },
-  { span: "lg:col-span-4", offset: "lg:mt-14", height: "min-h-[17rem] md:min-h-[22rem]" },
-  { span: "lg:col-span-5", offset: "", height: "min-h-[19rem] md:min-h-[24rem]" },
-  { span: "lg:col-span-3", offset: "lg:mt-20", height: "min-h-[16rem] md:min-h-[20rem]" },
-  { span: "lg:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
+  { span: "xl:col-span-5", offset: "", height: "min-h-[19rem] md:min-h-[24rem]" },
+  { span: "xl:col-span-3", offset: "xl:mt-20", height: "min-h-[16rem] md:min-h-[20rem]" },
+  { span: "xl:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
+  { span: "xl:col-span-4", offset: "xl:mt-12", height: "min-h-[18rem] md:min-h-[23rem]" },
+  { span: "xl:col-span-4", offset: "", height: "min-h-[16rem] md:min-h-[21rem]" },
+  { span: "xl:col-span-4", offset: "xl:mt-14", height: "min-h-[17rem] md:min-h-[22rem]" },
+  { span: "xl:col-span-3", offset: "", height: "min-h-[16rem] md:min-h-[20rem]" },
+  { span: "xl:col-span-5", offset: "xl:mt-20", height: "min-h-[19rem] md:min-h-[24rem]" },
+  { span: "xl:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
 ];
 
 const plateTone: Record<Product["plate"], { plate: string; name: string; meta: string; mark: string }> = {
@@ -46,7 +47,7 @@ export function ProductShowcase({ c }: { c: HomeContent }) {
           </div>
         </Reveal>
 
-        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-20 md:gap-6 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-6">
+        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-20 md:gap-6 xl:grid-cols-12 xl:gap-x-6 xl:gap-y-6">
           {products.map((product, i) => {
             const l = layout[i] ?? layout[0];
             const tone = plateTone[product.plate];
@@ -72,7 +73,7 @@ export function ProductShowcase({ c }: { c: HomeContent }) {
                   <WatermarkMark
                     aria-hidden
                     className={cn(
-                      "pointer-events-none absolute -bottom-12 -right-10 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",
+                      "pointer-events-none absolute -bottom-12 -right-2 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",
                       tone.mark
                     )}
                   />
