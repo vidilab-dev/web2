@@ -23,6 +23,7 @@
   --color-earth: #8a6948; /* Earth Brown: agri character, sparing */
   --color-earth-2: #6e5236; /* Earth Brown, darkened for small text on light grounds */
   --color-paper: #ffffff;
+  --color-canvas: #cfd6bb; /* Mat: the tone step that frames the boxed site */
 
   /* ---- Type ---- */
   --font-display: var(--font-display-face), ui-sans-serif, system-ui, sans-serif;
@@ -46,6 +47,10 @@
 :root {
   --margin: clamp(1.25rem, 3.6vw, 2rem);
   --maxw: 100rem;
+
+  /* Boxed site: the whole public surface sits in one box on the canvas mat. */
+  --box-gutter: clamp(1rem, 2.2vw, 1.75rem);
+  --box-maxw: 112rem;
   --section-y: clamp(6.5rem, 12vw, 14rem);
   --section-y-tight: clamp(4.5rem, 8vw, 8rem);
 
@@ -80,7 +85,7 @@
 
   body {
     margin: 0;
-    background: var(--color-ground);
+    background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: var(--text-body);
@@ -192,6 +197,23 @@
 
 @utility section-y-tight {
   padding-block: var(--section-y-tight);
+}
+
+/* =========================================================================
+   BOXED SITE: one box frames the whole public surface on the canvas mat.
+   Flush at the top — the fixed header caps it — with the sides and the foot
+   breathing on the mat. Overflow is clipped (not hidden) so fixed and
+   sticky positioning keep working; surfaces separate by tone, never by a
+   line or a shadow.
+   ========================================================================= */
+@utility site-box {
+  width: calc(100% - 2 * var(--box-gutter));
+  max-width: var(--box-maxw);
+  margin-inline: auto;
+  margin-bottom: var(--box-gutter);
+  background: var(--color-ground);
+  border-radius: var(--radius-plate);
+  overflow: clip;
 }
 
 /* =========================================================================

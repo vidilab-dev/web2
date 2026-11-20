@@ -44,7 +44,9 @@ export const capabilities: Capability[] = [
     focus: ["Karakterisasi mikroorganisme", "Uji laboratorium dan lapangan"],
   },
   {
-    title: "Integrated Bio-Agribusiness Solution",
+    // Cut to a title, not the full tagline: the brand phrase stays on the hero
+    // label and the solutions page; at 390px the full line wraps past two.
+    title: "Integrated Solution",
     description:
       "Pendekatan terintegrasi yang menyatukan asesmen lahan, perlakuan biologis, perlindungan tanaman, pemantauan, dan evaluasi kinerja dalam satu program.",
     href: "/solutions/integrated",

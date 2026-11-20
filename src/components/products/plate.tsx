@@ -67,7 +67,7 @@ export function ProductPlate({
       <WatermarkMark
         aria-hidden
         className={cn(
-          "pointer-events-none absolute -bottom-12 -right-10 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",
+          "pointer-events-none absolute -bottom-12 -right-2 size-40 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 md:size-56",
           t.mark
         )}
       />

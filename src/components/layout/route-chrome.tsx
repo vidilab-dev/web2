@@ -8,10 +8,14 @@ import { Footer } from "./footer";
 /**
  * Route-aware site chrome.
  *
- * The admin panel renders its own full-screen shell (and its own <main>), so
- * the public header, footer and main wrapper must not be applied there. This
- * component reads the pathname on the client and skips the chrome for /admin,
- * while the server layout stays a single source for fonts, metadata and schema.
+ * The public surface is one boxed site: header, main and footer share a
+ * single box on the canvas mat (flush at the top, where the fixed header
+ * caps it), so every full-bleed section is framed instead of touching the
+ * screen edge. The admin panel renders its own full-screen shell (and its
+ * own <main>), so the box and the public chrome must not be applied there.
+ * This component reads the pathname on the client and skips the chrome for
+ * /admin, while the server layout stays a single source for fonts,
+ * metadata and schema.
  *
  * Because the admin surface is behind a login gate and is disallowed in
  * robots.txt, hiding the public chrome from crawlers for those routes is
@@ -36,11 +40,13 @@ export function RouteChrome({
       <a href="#main-content" className="skip-link">
         Lompat ke konten utama
       </a>
-      <Header />
-      <main id="main-content" tabIndex={-1}>
-        {children}
-      </main>
-      <Footer contact={contact} />
+      <div className="site-box">
+        <Header />
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
+        <Footer contact={contact} />
+      </div>
     </>
   );
 }
