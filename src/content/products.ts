@@ -170,18 +170,6 @@ export const products: Product[] = [
     span: 3,
     dataStatus: "placeholder",
   },
-  {
-    slug: "astemic",
-    name: "ASTEMIC",
-    category: "pupuk-hayati",
-    summary: "Produk hayati untuk program nutrisi tanaman terpadu.",
-    description:
-      "ASTEMIC merupakan bagian dari portofolio produk PT Bio Industri Nusantara. Kategori teknis, komposisi, dan petunjuk penggunaan menunggu dokumen resmi produk.",
-    focus: ["Program nutrisi tanaman", "Dukungan pertumbuhan tanaman"],
-    plate: "ground",
-    span: 3,
-    dataStatus: "placeholder",
-  },
 ];
 
 export function getProduct(slug: string) {

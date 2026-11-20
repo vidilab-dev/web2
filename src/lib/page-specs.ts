@@ -864,7 +864,7 @@ export const productsSpec = {
   defaults: {
     headerTitle: "Lini\nProduk",
     headerLede:
-      "Sembilan produk dalam tiga lini yang dirancang untuk saling melengkapi dalam satu program pemeliharaan lahan.",
+      "Delapan produk dalam tiga lini yang dirancang untuk saling melengkapi dalam satu program pemeliharaan lahan.",
     headerPhoto: {
       src: "/images/compost-sieved.jpg",
       alt: "Kompos yang telah diayak dan siap diaplikasikan ke lahan",
@@ -1075,7 +1075,7 @@ export const homeSpec = {
 
     productsHeading: "Lini Produk",
     productsLede:
-      "Sembilan produk dalam tiga lini: pupuk organik, pupuk hayati, dan pengendali hayati. Semuanya dirancang untuk bekerja dalam satu program.",
+      "Delapan produk dalam tiga lini: pupuk organik, pupuk hayati, dan pengendali hayati. Semuanya dirancang untuk bekerja dalam satu program.",
     productsStatement: "Spesifikasi teknis setiap produk tersedia pada datasheet resmi.",
     productsBody: [
       "Komposisi, dosis, cara pakai, dan ketentuan registrasi produk hanya kami publikasikan setelah diverifikasi dari dokumen resmi. Kami tidak menampilkan angka yang belum dikonfirmasi.",

@@ -25,7 +25,7 @@ export default async function AdminProductsPage() {
         <div>
           <h1 className="text-[clamp(1.75rem,3.5vw,2.5rem)] leading-none">Produk</h1>
           <p className="mt-3 text-[1rem] text-ink-2">
-            Sembilan produk dalam tiga lini. Status data menandai mana yang sudah
+            Delapan produk dalam tiga lini. Status data menandai mana yang sudah
             diverifikasi dari datasheet resmi.
           </p>
         </div>

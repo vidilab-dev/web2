@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildPageMetadata({
   title: "Katalog Produk Pupuk Organik & Hayati",
   description:
-    "Katalog produk PT Bio Industri Nusantara: MARFU-P, PHE, KOMPOTA, KOMPOTA GLIO, BIOCOMP, BIOBUS, BIORIZ, BIOAGRODECO, dan ASTEMIC dalam lini pupuk organik, pupuk hayati, dan pengendali hayati.",
+    "Katalog produk PT Bio Industri Nusantara: MARFU-P, PHE, KOMPOTA, KOMPOTA GLIO, BIOCOMP, BIOBUS, BIORIZ, dan BIOAGRODECO dalam lini pupuk organik, pupuk hayati, dan pengendali hayati.",
   path: "/products",
   image: "/images/compost-sieved.jpg",
   imageAlt: "Kompos yang telah diayak dan siap diaplikasikan",
