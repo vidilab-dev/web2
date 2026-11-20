@@ -35,13 +35,13 @@ export default async function ProductsPage() {
         photo={c.headerPhoto}
       />
 
-      {/* Categories — three unequal doors, not three equal cards. */}
+      {/* Equal category cards, aligned on one shared grid. */}
       <section aria-labelledby="categories-heading" className="bg-ground section-y-tight">
         <div className="frame">
           <h2 id="categories-heading" className="sr-only">
             Kategori produk
           </h2>
-          <ul className="grid gap-x-8 gap-y-10 md:grid-cols-12">
+          <ul className="grid auto-rows-fr gap-6 lg:grid-cols-3">
             {productCategories.map((cat, i) => {
               const count = products.filter((p) => p.category === cat.slug).length;
               return (
@@ -49,11 +49,11 @@ export default async function ProductsPage() {
                   as="li"
                   key={cat.slug}
                   delay={i * 70}
-                  className={i === 0 ? "md:col-span-5" : i === 1 ? "md:col-span-4 md:mt-10" : "md:col-span-3 md:mt-20"}
+                  className="h-full"
                 >
                   <Link
                     href={`/products/category/${cat.slug}`}
-                    className="group flex h-full flex-col justify-between bg-ground-2 p-7 transition-colors duration-300 hover:bg-deep hover:text-ground md:p-8"
+                    className="group flex h-full min-h-[20rem] flex-col justify-between bg-ground-2 p-7 transition-colors duration-300 hover:bg-deep hover:text-ground md:p-8"
                   >
                     <div>
                       <h3 className="font-display text-[1.5rem] font-bold tracking-[-0.028em] md:text-[1.875rem]">
