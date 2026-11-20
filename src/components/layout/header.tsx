@@ -22,19 +22,27 @@ export function Header() {
   const isHome = pathname === "/";
   const onDark = isHome && !scrolled;
 
-  // Solid bar once the page has moved past the first screen.
+  // Re-sync after route scroll restoration as well as ordinary scrolling.
+  // The header persists between routes; a previous page's solid state must
+  // not remain when returning to the top of the home hero.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
+    const frame = requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("pageshow", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pageshow", onScroll);
+    };
+  }, [pathname]);
 
   // Reset menus on navigation — adjusting state during render, per React's
   // guidance for "changing state when a prop changes" (no effect needed).
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
+    setScrolled(false);
     setOpenMenu(null);
     setMobileOpen(false);
     setMobileSection(null);
@@ -71,7 +79,7 @@ export function Header() {
       ref={headerRef}
       className={cn(
         "fixed top-0 z-100 left-[var(--box-gutter)] right-[var(--box-gutter)] mx-auto max-w-[var(--box-maxw)] transition-[background-color,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-        onDark ? "text-ground" : "bg-ground text-ink"
+        onDark ? "bg-transparent text-ground" : "bg-ground text-ink"
       )}
       onMouseLeave={() => setOpenMenu(null)}
     >
