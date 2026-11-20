@@ -22,10 +22,13 @@ export async function News({ c }: { c: HomeContent }) {
           </div>
         </Reveal>
 
+        {/* The featured/list split engages at xl: below that the list stacks
+            full-width, so a long article title never staircases in the
+            narrow column the 12-col split leaves at tablet width. */}
         {lead && (
-          <div className="mt-14 grid gap-y-14 md:mt-20 md:grid-cols-12 md:gap-x-10">
+          <div className="mt-14 grid gap-y-14 md:mt-20 xl:grid-cols-12 xl:gap-x-10">
           {/* The lead article carries the most weight, one dominant story. */}
-          <Reveal className="md:col-span-7">
+          <Reveal className="xl:col-span-7">
             <article>
               <Link href={`/news/${lead.slug}`} className="group block">
                 <div className="relative aspect-[3/2] overflow-hidden bg-ground-3">
@@ -59,7 +62,7 @@ export async function News({ c }: { c: HomeContent }) {
           </Reveal>
 
           {/* The rest form a tight editorial list, not a second card grid. */}
-          <ul className="md:col-span-5">
+          <ul className="xl:col-span-5">
             {others.map((a, i) => (
               <Reveal as="li" key={a.slug} delay={i * 60}>
                 <article>

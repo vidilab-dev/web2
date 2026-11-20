@@ -70,12 +70,12 @@ export function Header() {
     <header
       ref={headerRef}
       className={cn(
-        "fixed inset-x-0 top-0 z-100 transition-[background-color,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "fixed top-0 z-100 left-[var(--box-gutter)] right-[var(--box-gutter)] mx-auto max-w-[var(--box-maxw)] transition-[background-color,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
         onDark ? "text-ground" : "bg-ground text-ink"
       )}
       onMouseLeave={() => setOpenMenu(null)}
     >
-      <div className="frame flex h-16 items-center gap-6 md:h-[4.5rem]">
+      <div className="frame flex h-16 items-center gap-4 md:h-[4.5rem]">
         <Link
           href="/"
           onClick={closeAll}
@@ -85,7 +85,10 @@ export function Header() {
           <Logo className="h-12 w-auto md:h-14" tone={onDark ? "white" : "color"} />
         </Link>
 
-        <nav aria-label="Navigasi utama" className="ml-auto hidden items-center gap-1 lg:flex">
+        {/* The full nav needs ~940px of row: it engages at xl (1280), where the
+            frame still leaves a margin. Below that the hamburger takes over, so
+            no label is ever squeezed onto a second line. */}
+        <nav aria-label="Navigasi utama" className="ml-auto hidden items-center gap-0.5 xl:flex">
           {primary.map((item) => {
             const hasChildren = Boolean(item.children?.length);
             const isOpen = openMenu === item.label;
@@ -101,7 +104,7 @@ export function Header() {
                     onClick={() => setOpenMenu(isOpen ? null : item.label)}
                     onMouseEnter={() => setOpenMenu(item.label)}
                     className={cn(
-                      "flex items-center gap-1 px-3 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] transition-colors duration-200",
+                      "flex items-center gap-1 whitespace-nowrap px-2 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] transition-colors duration-200",
                       isOpen || active ? "" : "opacity-90 hover:opacity-100"
                     )}
                   >
@@ -118,7 +121,7 @@ export function Header() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "block px-3 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] transition-opacity duration-200",
+                      "block whitespace-nowrap px-2 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] transition-opacity duration-200",
                       active ? "" : "opacity-90 hover:opacity-100"
                     )}
                   >
@@ -133,7 +136,7 @@ export function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="block px-3 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] opacity-90 transition-opacity duration-200 hover:opacity-100"
+              className="block whitespace-nowrap px-2 py-2 font-display text-[0.9375rem] font-semibold tracking-[-0.014em] opacity-90 transition-opacity duration-200 hover:opacity-100"
             >
               {item.label}
             </Link>
@@ -142,7 +145,7 @@ export function Header() {
           <Link
             href="/rfq"
             className={cn(
-              "press ml-3 inline-flex items-center gap-2 rounded-[2px] px-5 py-2.5 font-display text-[0.9375rem] font-bold tracking-[-0.014em] transition-colors duration-300",
+              "press ml-2 inline-flex items-center gap-2 whitespace-nowrap rounded-[2px] px-4 py-2.5 font-display text-[0.9375rem] font-bold tracking-[-0.014em] transition-colors duration-300",
               onDark ? "bg-ground text-deep hover:bg-fresh hover:text-deep-3" : "bg-deep text-ground hover:bg-accent"
             )}
           >
@@ -158,7 +161,7 @@ export function Header() {
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
           aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
-          className="ml-auto lg:hidden"
+          className="ml-auto xl:hidden"
         >
           {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </button>
@@ -226,7 +229,7 @@ export function Header() {
         id="mobile-nav"
         hidden={!mobileOpen}
         className={cn(
-          "fixed inset-x-0 top-16 bottom-0 z-99 overflow-y-auto bg-ground text-ink lg:hidden",
+          "fixed top-16 bottom-0 z-99 left-[var(--box-gutter)] right-[var(--box-gutter)] mx-auto max-w-[var(--box-maxw)] overflow-y-auto bg-ground text-ink md:top-[4.5rem] xl:hidden",
           mobileOpen ? "block" : "hidden"
         )}
       >
