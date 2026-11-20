@@ -20,7 +20,9 @@ function createClient(): PrismaClient | null {
   const pool = new Pool({ connectionString: url });
   const adapter = new PrismaPg(pool);
   const client = new PrismaClient({ adapter });
-  if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = client;
+  // Cache in production too: repeated calls and reloaded module instances must
+  // share the same client and its underlying connection pool.
+  globalForPrisma.prisma = client;
   return client;
 }
 

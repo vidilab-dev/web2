@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Product as DatabaseProduct } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
   getProduct as getLocalProduct,
@@ -73,6 +74,23 @@ function withLocalSpec(p: LocalProduct): ProductWithSpec {
   return { ...p, ...emptySpec };
 }
 
+function withDatabaseSpec(local: LocalProduct, row: DatabaseProduct): ProductWithSpec {
+  return {
+    ...local,
+    name: row.name,
+    summary: row.summary,
+    description: row.description,
+    dataStatus: (row.dataStatus as LocalProduct["dataStatus"]) ?? local.dataStatus,
+    composition: row.composition,
+    dosage: row.dosage,
+    application: row.application,
+    packaging: row.packaging,
+    shelfLife: row.shelfLife,
+    registrationNumber: row.registrationNumber,
+    imageUrl: row.imageUrl,
+  };
+}
+
 function blankToNull(v: string | undefined): string | null {
   const t = (v ?? "").trim();
   return t.length > 0 ? t : null;
@@ -116,27 +134,8 @@ export async function getProductWithSpec(slug: string): Promise<ProductWithSpec 
   if (!db) return withLocalSpec(local);
 
   try {
-    let row = await db.product.findUnique({ where: { slug } });
-    if (!row) {
-      await seedProduct(slug);
-      row = await db.product.findUnique({ where: { slug } });
-    }
-    if (!row) return withLocalSpec(local);
-
-    return {
-      ...local,
-      name: row.name,
-      summary: row.summary,
-      description: row.description,
-      dataStatus: (row.dataStatus as LocalProduct["dataStatus"]) ?? local.dataStatus,
-      composition: row.composition,
-      dosage: row.dosage,
-      application: row.application,
-      packaging: row.packaging,
-      shelfLife: row.shelfLife,
-      registrationNumber: row.registrationNumber,
-      imageUrl: row.imageUrl,
-    };
+    const row = await db.product.findUnique({ where: { slug } });
+    return row ? withDatabaseSpec(local, row) : withLocalSpec(local);
   } catch (err) {
     console.error("[products] database read failed, using local content", slug, err);
     return withLocalSpec(local);
@@ -144,12 +143,22 @@ export async function getProductWithSpec(slug: string): Promise<ProductWithSpec 
 }
 
 export async function listProductsWithSpec(): Promise<ProductWithSpec[]> {
-  const out: ProductWithSpec[] = [];
-  for (const p of localProducts) {
-    const full = await getProductWithSpec(p.slug);
-    out.push(full ?? withLocalSpec(p));
+  const db = prisma();
+  if (!db) return localProducts.map(withLocalSpec);
+
+  try {
+    const rows = await db.product.findMany({
+      where: { slug: { in: localProducts.map((p) => p.slug) } },
+    });
+    const bySlug = new Map(rows.map((row) => [row.slug, row]));
+    return localProducts.map((local) => {
+      const row = bySlug.get(local.slug);
+      return row ? withDatabaseSpec(local, row) : withLocalSpec(local);
+    });
+  } catch (err) {
+    console.error("[products] database list failed, using local content", err);
+    return localProducts.map(withLocalSpec);
   }
-  return out;
 }
 
 /** Persist datasheet fields from the admin form. Returns field errors on invalid input. */

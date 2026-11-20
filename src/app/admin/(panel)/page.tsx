@@ -30,7 +30,10 @@ const kindMeta: Record<Submission["kind"], string> = {
 };
 
 export default async function AdminDashboardPage() {
-  const submissions = await listSubmissions();
+  const [submissions, allArticles] = await Promise.all([
+    listSubmissions(),
+    listArticles(),
+  ]);
   const counts = {
     all: submissions.length,
     new: submissions.filter((s) => s.status === "new").length,
@@ -39,7 +42,6 @@ export default async function AdminDashboardPage() {
   };
 
   const needsVerification = products.filter((p) => p.dataStatus === "placeholder").length;
-  const allArticles = await listArticles();
   const sampleArticles = allArticles.filter((a) => a.sample).length;
 
   const stats = [

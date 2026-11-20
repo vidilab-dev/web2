@@ -14,6 +14,7 @@ import {
 import { isAuthenticated } from "@/lib/auth";
 import { logoutAction } from "../actions";
 import { LogoMark } from "@/components/layout/logo";
+import { AdminNavLink } from "@/components/admin/nav-link";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -45,13 +46,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <ul className="space-y-1">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link
+                <AdminNavLink
                   href={item.href}
                   className="flex items-center gap-3 rounded-[2px] px-3 py-2.5 text-[0.9375rem] font-medium text-ground/70 transition-colors duration-200 hover:bg-ground/10 hover:text-ground"
                 >
                   <item.icon aria-hidden className="size-4 shrink-0" />
                   {item.label}
-                </Link>
+                </AdminNavLink>
               </li>
             ))}
           </ul>
@@ -100,12 +101,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <ul className="flex gap-1">
           {nav.map((item) => (
             <li key={item.href}>
-              <Link
+              <AdminNavLink
                 href={item.href}
                 className="whitespace-nowrap rounded-[2px] px-3 py-2 text-[0.8125rem] font-medium text-ground/70"
               >
                 {item.label}
-              </Link>
+              </AdminNavLink>
             </li>
           ))}
         </ul>
