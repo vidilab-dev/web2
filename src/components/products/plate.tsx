@@ -76,8 +76,8 @@ export function ProductPlate({
             t.name,
             size === "md"
               ? product.name.length > 8
-                ? "text-[2rem] md:text-[2.75rem]"
-                : "text-[2.25rem] md:text-[3.25rem]"
+                ? "text-[1.5rem] xl:text-[2rem]"
+                : "text-[1.75rem] xl:text-[2.5rem]"
               : product.name.length > 8
                 ? "text-[1.5rem] md:text-[1.875rem]"
                 : "text-[1.75rem] md:text-[2.125rem]"

@@ -9,7 +9,6 @@ import { listProductsWithSpec } from "@/lib/products";
 import { getPageContent } from "@/lib/pages";
 import { productsSpec } from "@/lib/page-specs";
 import { buildPageMetadata } from "@/app/layout";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Katalog Produk Pupuk Organik & Hayati",
@@ -19,19 +18,6 @@ export const metadata: Metadata = buildPageMetadata({
   image: "/images/compost-sieved.jpg",
   imageAlt: "Kompos yang telah diayak dan siap diaplikasikan",
 });
-
-/** Uneven spans and offsets so the catalogue reads as a spread, not a card grid. */
-const layout = [
-  { span: "md:col-span-6 lg:col-span-5", offset: "", height: "min-h-[20rem] lg:min-h-[26rem]" },
-  { span: "md:col-span-6 lg:col-span-3", offset: "lg:mt-20", height: "min-h-[17rem] lg:min-h-[21rem]" },
-  { span: "md:col-span-6 lg:col-span-4", offset: "", height: "min-h-[18rem] lg:min-h-[24rem]" },
-  { span: "md:col-span-6 lg:col-span-4", offset: "lg:mt-14", height: "min-h-[19rem] lg:min-h-[25rem]" },
-  { span: "md:col-span-6 lg:col-span-4", offset: "", height: "min-h-[17rem] lg:min-h-[22rem]" },
-  { span: "md:col-span-6 lg:col-span-4", offset: "lg:mt-12", height: "min-h-[18rem] lg:min-h-[23rem]" },
-  { span: "md:col-span-6 lg:col-span-5", offset: "", height: "min-h-[20rem] lg:min-h-[26rem]" },
-  { span: "md:col-span-6 lg:col-span-3", offset: "lg:mt-20", height: "min-h-[17rem] lg:min-h-[21rem]" },
-  { span: "md:col-span-6 lg:col-span-4", offset: "", height: "min-h-[18rem] lg:min-h-[24rem]" },
-];
 
 export default async function ProductsPage() {
   const [c, products] = await Promise.all([
@@ -101,17 +87,16 @@ export default async function ProductsPage() {
             </p>
           </Reveal>
 
-          <ul className="mt-14 grid gap-6 md:mt-20 md:grid-cols-12 md:gap-x-6">
+          <ul className="mt-14 grid auto-rows-fr gap-6 sm:grid-cols-2 md:mt-20 xl:grid-cols-3">
             {products.map((p, i) => {
-              const l = layout[i] ?? layout[0];
               return (
                 <Reveal
                   as="li"
                   key={p.slug}
                   delay={(i % 3) * 70}
-                  className={cn("md:col-span-6", l.span, l.offset)}
+                  className="h-full"
                 >
-                  <ProductPlate product={p} imageUrl={p.imageUrl} className={cn("h-full", l.height)} />
+                  <ProductPlate product={p} imageUrl={p.imageUrl} className="h-full min-h-[24rem] md:min-h-[27rem]" />
                 </Reveal>
               );
             })}

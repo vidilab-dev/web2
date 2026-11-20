@@ -30,7 +30,6 @@ export async function generateMetadata({
   });
 }
 
-const offsets = ["", "lg:mt-16", "", "lg:mt-12", "", "lg:mt-20", "", "lg:mt-10", ""];
 
 export default async function ProductCategoryPage({
   params,
@@ -68,15 +67,15 @@ export default async function ProductCategoryPage({
               </Link>
             </div>
           ) : (
-            <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((p, i) => (
                 <Reveal
                   as="li"
                   key={p.slug}
                   delay={(i % 3) * 70}
-                  className={offsets[i % offsets.length]}
+                  className="h-full"
                 >
-                  <ProductPlate product={p} imageUrl={p.imageUrl} className="min-h-[19rem] h-full" />
+                  <ProductPlate product={p} imageUrl={p.imageUrl} className="min-h-[24rem] h-full md:min-h-[27rem]" />
                 </Reveal>
               ))}
             </ul>

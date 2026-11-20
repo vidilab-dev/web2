@@ -8,27 +8,6 @@ import { Reveal } from "@/components/motion/reveal";
 import { WatermarkMark } from "@/components/layout/logo";
 import type { HomeContent } from "@/lib/page-specs";
 
-/**
- * Editorial layout map. Spans and vertical offsets are deliberately uneven so
- * the catalogue reads as a spread rather than a uniform card grid.
- *
- * The mosaic only engages at xl and up, where each column is wide enough to
- * hold a product name at display size. Below that the catalogue is a plain
- * two-up grid, so a long name like BIOAGRODECO never overhangs its neighbour.
- * The longest name therefore sits in a col-span-5 slot, never the col-span-3.
- */
-const layout = [
-  { span: "xl:col-span-5", offset: "", height: "min-h-[19rem] md:min-h-[24rem]" },
-  { span: "xl:col-span-3", offset: "xl:mt-20", height: "min-h-[16rem] md:min-h-[20rem]" },
-  { span: "xl:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
-  { span: "xl:col-span-4", offset: "xl:mt-12", height: "min-h-[18rem] md:min-h-[23rem]" },
-  { span: "xl:col-span-4", offset: "", height: "min-h-[16rem] md:min-h-[21rem]" },
-  { span: "xl:col-span-4", offset: "xl:mt-14", height: "min-h-[17rem] md:min-h-[22rem]" },
-  { span: "xl:col-span-3", offset: "", height: "min-h-[16rem] md:min-h-[20rem]" },
-  { span: "xl:col-span-5", offset: "xl:mt-20", height: "min-h-[19rem] md:min-h-[24rem]" },
-  { span: "xl:col-span-4", offset: "", height: "min-h-[17rem] md:min-h-[22rem]" },
-];
-
 const plateTone: Record<Product["plate"], { plate: string; name: string; meta: string; mark: string }> = {
   deep: { plate: "bg-deep text-ground", name: "text-ground", meta: "text-fresh", mark: "text-ground/15" },
   "ground-2": { plate: "bg-ground-2 text-ink", name: "text-ink", meta: "text-accent", mark: "text-deep/10" },
@@ -49,9 +28,8 @@ export function ProductShowcase({ c, products }: { c: HomeContent; products: Pro
           </div>
         </Reveal>
 
-        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-20 md:gap-6 xl:grid-cols-12 xl:gap-x-6 xl:gap-y-6">
+        <ul className="mt-12 grid grid-cols-1 auto-rows-fr gap-4 sm:grid-cols-2 md:mt-20 md:gap-6 xl:grid-cols-3">
           {products.map((product, i) => {
-            const l = layout[i] ?? layout[0];
             const tone = plateTone[product.plate];
             const category = productCategories.find((c) => c.slug === product.category);
 
@@ -60,13 +38,13 @@ export function ProductShowcase({ c, products }: { c: HomeContent; products: Pro
                 as="li"
                 key={product.slug}
                 delay={(i % 3) * 70}
-                className={cn(l.span, l.offset)}
+                className="h-full"
               >
                 <Link
                   href={`/products/${product.slug}`}
                   className={cn(
                     "group relative flex h-full flex-col justify-between overflow-hidden rounded-[2px] p-6 transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 lg:p-8",
-                    l.height,
+                    "min-h-[24rem] md:min-h-[27rem]",
                     tone.plate
                   )}
                 >
@@ -86,8 +64,8 @@ export function ProductShowcase({ c, products }: { c: HomeContent; products: Pro
                         "font-display font-extrabold leading-[0.94] tracking-[-0.038em] decoration-2 underline-offset-8 transition-[text-decoration-color] duration-300 group-hover:underline",
                         tone.name,
                         product.name.length > 8
-                          ? "text-[1.5rem] lg:text-[2.75rem]"
-                          : "text-[1.75rem] lg:text-[3.25rem]"
+                          ? "text-[1.5rem] xl:text-[2rem]"
+                          : "text-[1.75rem] xl:text-[2.5rem]"
                       )}
                     >
                       {product.name}
